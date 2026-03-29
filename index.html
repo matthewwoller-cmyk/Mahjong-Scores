@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3-Player Mahjong Tracker</title>
+    <title>Mahjong Score Tracker</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -180,6 +180,7 @@
         .btn-lose { background-color: #e74c3c; }
         
         .btn-special { width: 100%; margin-top: 5px; }
+        .btn-half { background-color: #16a085; }
         .btn-surrender { background-color: #f39c12; }
         .btn-bank { background-color: #8e44ad; }
         
@@ -236,8 +237,8 @@
 </head>
 <body>
 
-    <h1>High-Stakes 3-Player Tracker</h1>
-    <div class="subtitle">Base +5 auto-applied. Multiplier rounds up magnitude. Auto-saves.</div>
+    <h1>Mahjong Score Tracker</h1>
+    <div class="subtitle">Base 5 points auto-applied.</div>
 
     <div class="master-scoreboard" id="master-scoreboard">
         </div>
@@ -266,10 +267,7 @@
         }
 
         function saveStateForUndo() {
-            // Take a deep copy snapshot of the current players array and push it to history
             historyStack.push(JSON.parse(JSON.stringify(players)));
-            
-            // Keep the history from getting too massive (remember the last 20 actions)
             if (historyStack.length > 20) {
                 historyStack.shift();
             }
@@ -277,10 +275,26 @@
 
         function undoLastAction() {
             if (historyStack.length > 0) {
-                players = historyStack.pop(); // Revert to the last saved state
+                players = historyStack.pop(); 
                 saveData();
                 render();
             }
+        }
+
+        function halveScore(index) {
+            saveStateForUndo(); // Save history so this can be undone
+            let p = players[index];
+            
+            if (p.score > 0) {
+                // If positive (Lost condition): cut in half and round down
+                p.score = Math.floor(p.score / 2);
+            } else if (p.score < 0) {
+                // If negative (Won condition): cut in half and round up toward zero
+                p.score = Math.ceil(p.score / 2);
+            }
+            
+            saveData();
+            render();
         }
 
         function render() {
@@ -289,16 +303,12 @@
             const undoBtn = document.getElementById('btn-undo');
             
             board.innerHTML = ''; 
-            
-            // Enable or disable the Undo button based on history
             undoBtn.disabled = (historyStack.length === 0);
 
-            // Calculate Global Net Score strictly off running tallies
             let globalNetScore = 0;
             let playerTalliesHtml = '<div class="tally-row">';
 
             players.forEach((p, index) => {
-                // Add ONLY the permanent tally to the global net, ignoring active scores
                 globalNetScore += p.runningTally;
 
                 let tallyClass = 'neutral';
@@ -334,7 +344,7 @@
                     streakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText} Streak<br>(1.5x Multiplier Active)</div>`;
                 }
 
-                // Surrender / Bank logic. Kept visible but disabled until 3+ streak
+                // Surrender / Bank logic
                 let isSpecialEnabled = (p.streakCount >= 3);
                 let specialBtnClass = 'btn-special';
                 let specialBtnText = 'Bank / Surrender (Need 3 Streak)';
@@ -348,6 +358,9 @@
                 }
 
                 let specialBtnHtml = `<button class="${specialBtnClass}" onclick="bankOrSurrender(${index})" ${isSpecialEnabled ? '' : 'disabled'}>${specialBtnText}</button>`;
+                
+                // I've Won / Lost Button logic
+                let halfBtnHtml = `<button class="btn-special btn-half" onclick="halveScore(${index})" ${p.score === 0 ? 'disabled' : ''}>I've Won/Lost (Halve Score)</button>`;
 
                 let badgeHtml = '';
                 if (p.setAsidePoints < 0) {
@@ -370,6 +383,7 @@
                         <button class="btn-win" onclick="recordHand(${index}, 'win')">Win (+)</button>
                         <button class="btn-lose" onclick="recordHand(${index}, 'lose')">Lose (-)</button>
                     </div>
+                    ${halfBtnHtml}
                     ${specialBtnHtml}
                 `;
                 board.appendChild(card);
@@ -377,7 +391,6 @@
 
             playerTalliesHtml += '</div>';
 
-            // Global Net Score Styling
             let netClass = 'neutral';
             let netDisplay = globalNetScore;
             if (globalNetScore > 0) {
@@ -387,7 +400,6 @@
                 netClass = 'negative';
             }
 
-            // Inject the complete Master Scoreboard
             scoreboard.innerHTML = `
                 <div class="combined-net-label">Combined Table Net Score</div>
                 <div class="combined-net-value ${netClass}">${netDisplay}</div>
@@ -403,7 +415,7 @@
         }
 
         function recordHand(index, resultType) {
-            saveStateForUndo(); // Snapshot before changing score
+            saveStateForUndo(); 
             
             const pointsInput = document.getElementById(`points-${index}`);
             const inputPoints = parseInt(pointsInput.value);
@@ -437,7 +449,7 @@
             let actionText = p.score > 0 ? "bank your winnings" : "set aside your debt";
             
             if (confirm(`Do you want to ${actionText} of ${p.score} points and reset your active streak?`)) {
-                saveStateForUndo(); // Snapshot before banking
+                saveStateForUndo(); 
                 
                 p.setAsidePoints += p.score; 
                 p.score = 0;
@@ -451,7 +463,7 @@
 
         function sweepToTally() {
             if (confirm("End the round? This will add everyone's active scores and banked/debt points to the Master Scoreboard, and reset the board for a new round.")) {
-                saveStateForUndo(); // Snapshot before clearing the board
+                saveStateForUndo(); 
                 
                 players.forEach(p => {
                     p.runningTally += (p.score + p.setAsidePoints);
@@ -468,7 +480,6 @@
 
         function hardReset() {
             if (confirm("WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!")) {
-                // Clear the undo history too so you can't undo a hard wipe
                 historyStack = []; 
                 
                 players = [
@@ -482,7 +493,6 @@
             }
         }
 
-        // Initial render
         render();
     </script>
 </body>

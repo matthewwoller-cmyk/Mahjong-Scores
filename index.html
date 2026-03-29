@@ -197,6 +197,20 @@
             align-items: center;
             gap: 15px;
         }
+        .btn-undo {
+            background-color: #f39c12; 
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: white;
+        }
+        .btn-undo:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
         .btn-tally { 
             background-color: #2980b9; 
             padding: 15px 30px;
@@ -212,6 +226,7 @@
             padding: 10px 20px;
             font-size: 0.9rem;
             width: auto;
+            margin-top: 20px;
         }
         .btn-hard-reset:hover {
             background-color: #e74c3c;
@@ -231,6 +246,7 @@
         </div>
 
     <div class="footer-controls">
+        <button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button>
         <button class="btn-tally" onclick="sweepToTally()">End Round & Update Tally</button>
         <button class="btn-hard-reset" onclick="hardReset()">Hard Reset (Wipe Everything)</button>
     </div>
@@ -243,26 +259,48 @@
         ];
 
         let players = JSON.parse(localStorage.getItem('mahjongData')) || defaultPlayers;
+        let historyStack = []; // Stores previous game states for Undo
 
         function saveData() {
             localStorage.setItem('mahjongData', JSON.stringify(players));
         }
 
+        function saveStateForUndo() {
+            // Take a deep copy snapshot of the current players array and push it to history
+            historyStack.push(JSON.parse(JSON.stringify(players)));
+            
+            // Keep the history from getting too massive (remember the last 20 actions)
+            if (historyStack.length > 20) {
+                historyStack.shift();
+            }
+        }
+
+        function undoLastAction() {
+            if (historyStack.length > 0) {
+                players = historyStack.pop(); // Revert to the last saved state
+                saveData();
+                render();
+            }
+        }
+
         function render() {
             const board = document.getElementById('board');
             const scoreboard = document.getElementById('master-scoreboard');
+            const undoBtn = document.getElementById('btn-undo');
             
             board.innerHTML = ''; 
             
-            // Calculate Global Net Score and build individual tallies
+            // Enable or disable the Undo button based on history
+            undoBtn.disabled = (historyStack.length === 0);
+
+            // Calculate Global Net Score strictly off running tallies
             let globalNetScore = 0;
             let playerTalliesHtml = '<div class="tally-row">';
 
             players.forEach((p, index) => {
-                // Add this player's entire existence to the global net
-                globalNetScore += (p.runningTally + p.score + p.setAsidePoints);
+                // Add ONLY the permanent tally to the global net, ignoring active scores
+                globalNetScore += p.runningTally;
 
-                // Individual Tally for the scoreboard
                 let tallyClass = 'neutral';
                 let displayTally = p.runningTally;
                 if (p.runningTally > 0) {
@@ -296,6 +334,7 @@
                     streakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText} Streak<br>(1.5x Multiplier Active)</div>`;
                 }
 
+                // Surrender / Bank logic. Kept visible but disabled until 3+ streak
                 let isSpecialEnabled = (p.streakCount >= 3);
                 let specialBtnClass = 'btn-special';
                 let specialBtnText = 'Bank / Surrender (Need 3 Streak)';
@@ -357,12 +396,15 @@
         }
 
         function updateName(index, newName) {
+            saveStateForUndo();
             players[index].name = newName;
             saveData(); 
             render(); 
         }
 
         function recordHand(index, resultType) {
+            saveStateForUndo(); // Snapshot before changing score
+            
             const pointsInput = document.getElementById(`points-${index}`);
             const inputPoints = parseInt(pointsInput.value);
             const points = isNaN(inputPoints) ? 0 : inputPoints; 
@@ -395,6 +437,8 @@
             let actionText = p.score > 0 ? "bank your winnings" : "set aside your debt";
             
             if (confirm(`Do you want to ${actionText} of ${p.score} points and reset your active streak?`)) {
+                saveStateForUndo(); // Snapshot before banking
+                
                 p.setAsidePoints += p.score; 
                 p.score = 0;
                 p.streakType = null;
@@ -407,6 +451,8 @@
 
         function sweepToTally() {
             if (confirm("End the round? This will add everyone's active scores and banked/debt points to the Master Scoreboard, and reset the board for a new round.")) {
+                saveStateForUndo(); // Snapshot before clearing the board
+                
                 players.forEach(p => {
                     p.runningTally += (p.score + p.setAsidePoints);
                     p.score = 0;
@@ -422,6 +468,9 @@
 
         function hardReset() {
             if (confirm("WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!")) {
+                // Clear the undo history too so you can't undo a hard wipe
+                historyStack = []; 
+                
                 players = [
                     { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
                     { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },

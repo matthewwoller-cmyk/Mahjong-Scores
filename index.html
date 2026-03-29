@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Player Mahjong Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdfbf7;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        /* Master Scoreboard Styles */
+        .master-scoreboard {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .combined-net-label {
+            font-size: 1rem;
+            color: #bdc3c7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .combined-net-value {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #34495e;
+            padding-bottom: 20px;
+            width: 100%;
+        }
+        .combined-net-value.positive { color: #2ecc71; }
+        .combined-net-value.negative { color: #e74c3c; }
+        .combined-net-value.neutral { color: #ecf0f1; }
+
+        .tally-row {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+        .tally-item {
+            flex: 1;
+        }
+        .tally-name {
+            font-size: 0.95rem;
+            color: #bdc3c7;
+            font-weight: bold;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 5px;
+        }
+        .tally-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .tally-value.positive { color: #2ecc71; }
+        .tally-value.negative { color: #e74c3c; }
+        .tally-value.neutral { color: #ecf0f1; }
+
+        .board {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        @media(min-width: 768px) {
+            .board {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        .player-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .name-container {
+            margin-bottom: 10px;
+            min-height: 60px;
+        }
+        .name-input {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+            border: none;
+            border-bottom: 2px dashed #ccc;
+            width: 90%;
+            background: transparent;
+            padding-bottom: 5px;
+        }
+        .name-input:focus {
+            outline: none;
+            border-bottom: 2px solid #3498db;
+        }
+        .badge {
+            display: inline-block;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        .badge-debt { background-color: #c0392b; }
+        .badge-banked { background-color: #27ae60; }
+        
+        .score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .positive { color: #27ae60; }
+        .negative { color: #e74c3c; }
+        .neutral { color: #34495e; }
+        
+        .streak {
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-weight: bold;
+            min-height: 2.5em;
+            margin-bottom: 15px;
+        }
+        .points-input {
+            width: calc(100% - 24px);
+            padding: 10px;
+            font-size: 1.1rem;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s, background-color 0.2s;
+        }
+        button:active:not(:disabled) { opacity: 0.8; }
+        .btn-win { background-color: #27ae60; }
+        .btn-lose { background-color: #e74c3c; }
+        
+        .btn-special { width: 100%; margin-top: 5px; }
+        .btn-surrender { background-color: #f39c12; }
+        .btn-bank { background-color: #8e44ad; }
+        
+        .btn-special:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            color: #7f8c8d;
+        }
+        
+        .footer-controls {
+            text-align: center;
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn-tally { 
+            background-color: #2980b9; 
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-hard-reset {
+            background-color: transparent;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            width: auto;
+        }
+        .btn-hard-reset:hover {
+            background-color: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>High-Stakes 3-Player Tracker</h1>
+    <div class="subtitle">Base +5 auto-applied. Multiplier rounds up magnitude. Auto-saves.</div>
+
+    <div class="master-scoreboard" id="master-scoreboard">
+        </div>
+
+    <div class="board" id="board">
+        </div>
+
+    <div class="footer-controls">
+        <button class="btn-tally" onclick="sweepToTally()">End Round & Update Tally</button>
+        <button class="btn-hard-reset" onclick="hardReset()">Hard Reset (Wipe Everything)</button>
+    </div>
+
+    <script>
+        const defaultPlayers = [
+            { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
+            { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
+            { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 }
+        ];
+
+        let players = JSON.parse(localStorage.getItem('mahjongData')) || defaultPlayers;
+
+        function saveData() {
+            localStorage.setItem('mahjongData', JSON.stringify(players));
+        }
+
+        function render() {
+            const board = document.getElementById('board');
+            const scoreboard = document.getElementById('master-scoreboard');
+            
+            board.innerHTML = ''; 
+            
+            // Calculate Global Net Score and build individual tallies
+            let globalNetScore = 0;
+            let playerTalliesHtml = '<div class="tally-row">';
+
+            players.forEach((p, index) => {
+                // Add this player's entire existence to the global net
+                globalNetScore += (p.runningTally + p.score + p.setAsidePoints);
+
+                // Individual Tally for the scoreboard
+                let tallyClass = 'neutral';
+                let displayTally = p.runningTally;
+                if (p.runningTally > 0) {
+                    tallyClass = 'positive';
+                    displayTally = "+" + p.runningTally;
+                } else if (p.runningTally < 0) {
+                    tallyClass = 'negative';
+                }
+
+                playerTalliesHtml += `
+                    <div class="tally-item">
+                        <div class="tally-name">${p.name}</div>
+                        <div class="tally-value ${tallyClass}">${displayTally}</div>
+                    </div>
+                `;
+
+                // --- Build the Player Cards ---
+                let scoreClass = 'neutral';
+                let displayScore = p.score;
+                if (p.score > 0) {
+                    scoreClass = 'positive';
+                    displayScore = "+" + p.score;
+                } else if (p.score < 0) {
+                    scoreClass = 'negative';
+                }
+
+                let streakHtml = `<div class="streak">No active streak</div>`;
+                if (p.streakCount > 0) {
+                    const typeText = p.streakType === 'win' ? "Win" : "Loss";
+                    const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";
+                    streakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText} Streak<br>(1.5x Multiplier Active)</div>`;
+                }
+
+                let isSpecialEnabled = (p.streakCount >= 3);
+                let specialBtnClass = 'btn-special';
+                let specialBtnText = 'Bank / Surrender (Need 3 Streak)';
+                
+                if (p.streakType === 'win') {
+                    specialBtnClass += ' btn-bank';
+                    specialBtnText = 'Bank Winnings & Reset';
+                } else if (p.streakType === 'lose') {
+                    specialBtnClass += ' btn-surrender';
+                    specialBtnText = 'Surrender & Set Aside Debt';
+                }
+
+                let specialBtnHtml = `<button class="${specialBtnClass}" onclick="bankOrSurrender(${index})" ${isSpecialEnabled ? '' : 'disabled'}>${specialBtnText}</button>`;
+
+                let badgeHtml = '';
+                if (p.setAsidePoints < 0) {
+                    badgeHtml = `<div class="badge badge-debt">Set Aside Debt: ${p.setAsidePoints}</div>`;
+                } else if (p.setAsidePoints > 0) {
+                    badgeHtml = `<div class="badge badge-banked">Banked Winnings: +${p.setAsidePoints}</div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.innerHTML = `
+                    <div class="name-container">
+                        <input type="text" class="name-input" value="${p.name}" onchange="updateName(${index}, this.value)">
+                        <br>${badgeHtml}
+                    </div>
+                    <div class="score ${scoreClass}">${displayScore}</div>
+                    ${streakHtml}
+                    <input type="number" id="points-${index}" class="points-input" placeholder="Hand points" min="0">
+                    <div class="action-buttons">
+                        <button class="btn-win" onclick="recordHand(${index}, 'win')">Win (+)</button>
+                        <button class="btn-lose" onclick="recordHand(${index}, 'lose')">Lose (-)</button>
+                    </div>
+                    ${specialBtnHtml}
+                `;
+                board.appendChild(card);
+            });
+
+            playerTalliesHtml += '</div>';
+
+            // Global Net Score Styling
+            let netClass = 'neutral';
+            let netDisplay = globalNetScore;
+            if (globalNetScore > 0) {
+                netClass = 'positive';
+                netDisplay = "+" + globalNetScore;
+            } else if (globalNetScore < 0) {
+                netClass = 'negative';
+            }
+
+            // Inject the complete Master Scoreboard
+            scoreboard.innerHTML = `
+                <div class="combined-net-label">Combined Table Net Score</div>
+                <div class="combined-net-value ${netClass}">${netDisplay}</div>
+                ${playerTalliesHtml}
+            `;
+        }
+
+        function updateName(index, newName) {
+            players[index].name = newName;
+            saveData(); 
+            render(); 
+        }
+
+        function recordHand(index, resultType) {
+            const pointsInput = document.getElementById(`points-${index}`);
+            const inputPoints = parseInt(pointsInput.value);
+            const points = isNaN(inputPoints) ? 0 : inputPoints; 
+            const totalHandPoints = points + 5; 
+
+            let p = players[index];
+
+            if (p.streakType === resultType) {
+                let currentMagnitude = Math.abs(p.score);
+                let newMagnitude = Math.ceil(currentMagnitude * 1.5);
+                p.score = p.score >= 0 ? newMagnitude : -newMagnitude;
+                p.streakCount++;
+            } else {
+                p.streakType = resultType;
+                p.streakCount = 1;
+            }
+
+            if (resultType === 'win') {
+                p.score += totalHandPoints;
+            } else {
+                p.score -= totalHandPoints;
+            }
+
+            saveData(); 
+            render();
+        }
+
+        function bankOrSurrender(index) {
+            let p = players[index];
+            let actionText = p.score > 0 ? "bank your winnings" : "set aside your debt";
+            
+            if (confirm(`Do you want to ${actionText} of ${p.score} points and reset your active streak?`)) {
+                p.setAsidePoints += p.score; 
+                p.score = 0;
+                p.streakType = null;
+                p.streakCount = 0;
+                
+                saveData(); 
+                render();
+            }
+        }
+
+        function sweepToTally() {
+            if (confirm("End the round? This will add everyone's active scores and banked/debt points to the Master Scoreboard, and reset the board for a new round.")) {
+                players.forEach(p => {
+                    p.runningTally += (p.score + p.setAsidePoints);
+                    p.score = 0;
+                    p.streakType = null;
+                    p.streakCount = 0;
+                    p.setAsidePoints = 0;
+                });
+                
+                saveData(); 
+                render();
+            }
+        }
+
+        function hardReset() {
+            if (confirm("WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!")) {
+                players = [
+                    { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
+                    { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
+                    { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 }
+                ];
+                
+                saveData(); 
+                render();
+            }
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>

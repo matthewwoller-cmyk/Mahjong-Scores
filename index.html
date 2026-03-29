@@ -12,11 +12,40 @@
             max-width: 900px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
         }
+        
+        /* Language Toggle Styles */
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            background: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .lang-toggle button {
+            background: transparent;
+            border: none;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-weight: bold;
+            transition: 0.3s;
+            border-radius: 20px;
+        }
+        .lang-toggle button.active {
+            background: #2c3e50;
+            color: white;
+        }
+
         h1 {
             text-align: center;
             color: #2c3e50;
             margin-bottom: 5px;
+            margin-top: 30px; /* Space for language toggle */
         }
         .subtitle {
             text-align: center;
@@ -237,22 +266,89 @@
 </head>
 <body>
 
-    <h1>Mahjong Score Tracker</h1>
-    <div class="subtitle">Base 5 points auto-applied.</div>
+    <div class="lang-toggle">
+        <button id="lang-en" onclick="setLanguage('en')">EN</button>
+        <button id="lang-zh" onclick="setLanguage('zh')">粵</button>
+    </div>
 
-    <div class="master-scoreboard" id="master-scoreboard">
-        </div>
+    <h1 id="ui-title">Mahjong Score Tracker</h1>
+    <div class="subtitle" id="ui-subtitle">Base 5 points auto-applied.</div>
 
-    <div class="board" id="board">
-        </div>
+    <div class="master-scoreboard" id="master-scoreboard"></div>
+
+    <div class="board" id="board"></div>
 
     <div class="footer-controls">
         <button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button>
-        <button class="btn-tally" onclick="sweepToTally()">End Round & Update Tally</button>
-        <button class="btn-hard-reset" onclick="hardReset()">Hard Reset (Wipe Everything)</button>
+        <button class="btn-tally" id="btn-tally" onclick="sweepToTally()">Pay & Update Tally</button>
+        <button class="btn-hard-reset" id="btn-hard-reset" onclick="hardReset()">Hard Reset (Wipe Everything)</button>
     </div>
 
     <script>
+        // --- Translations Dictionary ---
+        const i18n = {
+            en: {
+                title: "Mahjong Score Tracker",
+                subtitle: "Base 5 points auto-applied.",
+                netScore: "Combined Table Net Score",
+                noStreak: "No active streak",
+                winStreak: "Win Streak",
+                lossStreak: "Loss Streak",
+                multiplier: "1.5x Multiplier Active",
+                handPoints: "Hand points",
+                winBtn: "Win (+)",
+                loseBtn: "Lose (-)",
+                revengeBtn: "Revenge",
+                bankNeed3: "Bank / Surrender (Need 3 Streak)",
+                bankWinnings: "Bank Winnings & Reset",
+                surrenderDebt: "Surrender & Set Aside Debt",
+                undoBtn: "⟲ Undo Last Action",
+                tallyBtn: "Pay & Update Tally",
+                resetBtn: "Hard Reset (Wipe Everything)",
+                badgeDebt: "Set Aside Debt: ",
+                badgeBanked: "Banked Winnings: +",
+                confirmBank: "Do you want to bank your winnings of",
+                confirmSurrender: "Do you want to set aside your debt of",
+                confirmResetStreak: "points and reset your active streak?",
+                confirmPay: "End the round? This will add everyone's active scores and banked/debt points to the Master Scoreboard, and reset the board for a new round.",
+                confirmWipe: "WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!"
+            },
+            zh: {
+                title: "麻雀計分器",
+                subtitle: "自動加上5分底分。",
+                netScore: "全檯總結算",
+                noStreak: "沒有連勝/連敗",
+                winStreak: "連勝",
+                lossStreak: "連敗",
+                multiplier: "1.5倍生效中",
+                handPoints: "番數 / 分數",
+                winBtn: "贏 (+)",
+                loseBtn: "輸 (-)",
+                revengeBtn: "報仇",
+                bankNeed3: "儲起 / 投降 (需連中3次)",
+                bankWinnings: "儲起贏分並重置",
+                surrenderDebt: "投降並記下欠債",
+                undoBtn: "⟲ 復原上一步",
+                tallyBtn: "找數並更新總結算",
+                resetBtn: "完全重置 (清除所有資料)",
+                badgeDebt: "記下欠債: ",
+                badgeBanked: "儲起贏分: +",
+                confirmBank: "你確定要儲起",
+                confirmSurrender: "你確定要記下",
+                confirmResetStreak: "分並重置連擊嗎？",
+                confirmPay: "結束此局並找數？這會將所有人的活躍分數和儲起/欠債加到總結算，並重置版面以開始新一局。",
+                confirmWipe: "警告：確定要完全清除所有資料嗎？這會把總結算也一併刪除！"
+            }
+        };
+
+        let currentLang = localStorage.getItem('mahjongLang') || 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('mahjongLang', lang);
+            render();
+        }
+
         const defaultPlayers = [
             { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
             { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
@@ -260,7 +356,7 @@
         ];
 
         let players = JSON.parse(localStorage.getItem('mahjongData')) || defaultPlayers;
-        let historyStack = []; // Stores previous game states for Undo
+        let historyStack = []; 
 
         function saveData() {
             localStorage.setItem('mahjongData', JSON.stringify(players));
@@ -282,14 +378,12 @@
         }
 
         function halveScore(index) {
-            saveStateForUndo(); // Save history so this can be undone
+            saveStateForUndo(); 
             let p = players[index];
             
             if (p.score > 0) {
-                // If positive (Lost condition): cut in half and round down
                 p.score = Math.floor(p.score / 2);
             } else if (p.score < 0) {
-                // If negative (Won condition): cut in half and round up toward zero
                 p.score = Math.ceil(p.score / 2);
             }
             
@@ -298,6 +392,19 @@
         }
 
         function render() {
+            const t = i18n[currentLang]; // Get current translations
+
+            // Update Language Toggle Buttons
+            document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
+            document.getElementById('lang-zh').classList.toggle('active', currentLang === 'zh');
+
+            // Update Static Text
+            document.getElementById('ui-title').innerText = t.title;
+            document.getElementById('ui-subtitle').innerText = t.subtitle;
+            document.getElementById('btn-undo').innerText = t.undoBtn;
+            document.getElementById('btn-tally').innerText = t.tallyBtn;
+            document.getElementById('btn-hard-reset').innerText = t.resetBtn;
+
             const board = document.getElementById('board');
             const scoreboard = document.getElementById('master-scoreboard');
             const undoBtn = document.getElementById('btn-undo');
@@ -337,36 +444,36 @@
                     scoreClass = 'negative';
                 }
 
-                let streakHtml = `<div class="streak">No active streak</div>`;
+                let streakHtml = `<div class="streak">${t.noStreak}</div>`;
                 if (p.streakCount > 0) {
-                    const typeText = p.streakType === 'win' ? "Win" : "Loss";
+                    const typeText = p.streakType === 'win' ? t.winStreak : t.lossStreak;
                     const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";
-                    streakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText} Streak<br>(1.5x Multiplier Active)</div>`;
+                    streakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText}<br>(${t.multiplier})</div>`;
                 }
 
                 // Surrender / Bank logic
                 let isSpecialEnabled = (p.streakCount >= 3);
                 let specialBtnClass = 'btn-special';
-                let specialBtnText = 'Bank / Surrender (Need 3 Streak)';
+                let specialBtnText = t.bankNeed3;
                 
                 if (p.streakType === 'win') {
                     specialBtnClass += ' btn-bank';
-                    specialBtnText = 'Bank Winnings & Reset';
+                    specialBtnText = t.bankWinnings;
                 } else if (p.streakType === 'lose') {
                     specialBtnClass += ' btn-surrender';
-                    specialBtnText = 'Surrender & Set Aside Debt';
+                    specialBtnText = t.surrenderDebt;
                 }
 
                 let specialBtnHtml = `<button class="${specialBtnClass}" onclick="bankOrSurrender(${index})" ${isSpecialEnabled ? '' : 'disabled'}>${specialBtnText}</button>`;
                 
-                // I've Won / Lost Button logic
-                let halfBtnHtml = `<button class="btn-special btn-half" onclick="halveScore(${index})" ${p.score === 0 ? 'disabled' : ''}>I've Won/Lost (Halve Score)</button>`;
+                // Revenge Button
+                let halfBtnHtml = `<button class="btn-special btn-half" onclick="halveScore(${index})" ${p.score === 0 ? 'disabled' : ''}>${t.revengeBtn}</button>`;
 
                 let badgeHtml = '';
                 if (p.setAsidePoints < 0) {
-                    badgeHtml = `<div class="badge badge-debt">Set Aside Debt: ${p.setAsidePoints}</div>`;
+                    badgeHtml = `<div class="badge badge-debt">${t.badgeDebt}${p.setAsidePoints}</div>`;
                 } else if (p.setAsidePoints > 0) {
-                    badgeHtml = `<div class="badge badge-banked">Banked Winnings: +${p.setAsidePoints}</div>`;
+                    badgeHtml = `<div class="badge badge-banked">${t.badgeBanked}${p.setAsidePoints}</div>`;
                 }
 
                 const card = document.createElement('div');
@@ -378,10 +485,10 @@
                     </div>
                     <div class="score ${scoreClass}">${displayScore}</div>
                     ${streakHtml}
-                    <input type="number" id="points-${index}" class="points-input" placeholder="Hand points" min="0">
+                    <input type="number" id="points-${index}" class="points-input" placeholder="${t.handPoints}" min="0">
                     <div class="action-buttons">
-                        <button class="btn-win" onclick="recordHand(${index}, 'win')">Win (+)</button>
-                        <button class="btn-lose" onclick="recordHand(${index}, 'lose')">Lose (-)</button>
+                        <button class="btn-win" onclick="recordHand(${index}, 'win')">${t.winBtn}</button>
+                        <button class="btn-lose" onclick="recordHand(${index}, 'lose')">${t.loseBtn}</button>
                     </div>
                     ${halfBtnHtml}
                     ${specialBtnHtml}
@@ -401,7 +508,7 @@
             }
 
             scoreboard.innerHTML = `
-                <div class="combined-net-label">Combined Table Net Score</div>
+                <div class="combined-net-label">${t.netScore}</div>
                 <div class="combined-net-value ${netClass}">${netDisplay}</div>
                 ${playerTalliesHtml}
             `;
@@ -446,9 +553,10 @@
 
         function bankOrSurrender(index) {
             let p = players[index];
-            let actionText = p.score > 0 ? "bank your winnings" : "set aside your debt";
+            const t = i18n[currentLang];
+            let actionText = p.score > 0 ? t.confirmBank : t.confirmSurrender;
             
-            if (confirm(`Do you want to ${actionText} of ${p.score} points and reset your active streak?`)) {
+            if (confirm(`${actionText} ${p.score} ${t.confirmResetStreak}`)) {
                 saveStateForUndo(); 
                 
                 p.setAsidePoints += p.score; 
@@ -462,7 +570,7 @@
         }
 
         function sweepToTally() {
-            if (confirm("End the round? This will add everyone's active scores and banked/debt points to the Master Scoreboard, and reset the board for a new round.")) {
+            if (confirm(i18n[currentLang].confirmPay)) {
                 saveStateForUndo(); 
                 
                 players.forEach(p => {
@@ -479,7 +587,7 @@
         }
 
         function hardReset() {
-            if (confirm("WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!")) {
+            if (confirm(i18n[currentLang].confirmWipe)) {
                 historyStack = []; 
                 
                 players = [

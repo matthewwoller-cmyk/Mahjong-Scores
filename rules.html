@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taiwanese Mahjong Scoring Rules</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdfbf7;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .nav-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: bold;
+        }
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+        td.points {
+            font-weight: bold;
+            color: #27ae60;
+            white-space: nowrap;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        .notes-section {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #2980b9;
+            margin-bottom: 30px;
+        }
+        .notes-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        @media(max-width: 600px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            th { display: none; }
+            td {
+                position: relative;
+                padding-left: 50%;
+                border-bottom: none;
+            }
+            td:last-child {
+                border-bottom: 1px solid #eee;
+            }
+            td::before {
+                position: absolute;
+                top: 12px;
+                left: 15px;
+                width: 45%;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #7f8c8d;
+            }
+            td:nth-of-type(1)::before { content: "Hand / Rule"; }
+            td:nth-of-type(2)::before { content: "Points"; }
+            td:nth-of-type(3)::before { content: "Description"; }
+            
+            td.points { padding-left: 15px; text-align: left; margin-bottom: 5px; }
+            td.points::before { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-link">← Back to Score Tracker</a>
+
+    <h1>Taiwanese Mahjong Scoring</h1>
+
+    <div class="notes-section">
+        <h3>House Notes & Terminology</h3>
+        <ul>
+            <li><strong>PUNG:</strong> SAME (Three of a kind)</li>
+            <li><strong>CHOW:</strong> RUMMIE (A straight/sequence) - <em>BUT ONLY IF AFTER PHILLIP</em></li>
+        </ul>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Hand / Rule</th>
+                <th>Points</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Dealership</td>
+                <td class="points">1, 3, 5, 7...</td>
+                <td>1 point for the dealership, plus 2 points for every time the dealership is retained.</td>
+            </tr>
+            <tr>
+                <td>Self-drawn</td>
+                <td class="points">1</td>
+                <td>1 point if the winning tile is self-drawn.</td>
+            </tr>
+            <tr>
+                <td>No Winds or Dragons</td>
+                <td class="points">1</td>
+                <td>1 point for a winning hand that contains no winds or dragons.</td>
+            </tr>
+            <tr>
+                <td>No Flowers or Seasons</td>
+                <td class="points">1</td>
+                <td>1 point for a winning hand that contains no flowers or seasons.</td>
+            </tr>
+            <tr>
+                <td>No Winds, Dragons, Flowers, or Seasons</td>
+                <td class="points">5</td>
+                <td>5 points for a winning hand that contains no winds, dragons, flowers, or seasons.</td>
+            </tr>
+            <tr>
+                <td>Two Five Eight</td>
+                <td class="points">1</td>
+                <td>1 point for a winning hand where the pair is a pair of 2s, 5s, or 8s, of any suit.</td>
+            </tr>
+            <tr>
+                <td>Pair Wait</td>
+                <td class="points">2</td>
+                <td>2 points for a winning hand where the winning tile completes a pung from either of 2 pairs.</td>
+            </tr>
+            <tr>
+                <td>Single Wait</td>
+                <td class="points">2</td>
+                <td>2 points for a winning hand where only 1 tile can be the winning tile.</td>
+            </tr>
+            <tr>
+                <td>Flower / Season Supplement</td>
+                <td class="points">1</td>
+                <td>1 point if the winning tile is from a flower or season supplement.</td>
+            </tr>
+            <tr>
+                <td>Last Tile</td>
+                <td class="points">10</td>
+                <td>10 points if the winning tile is the last tile of the wall.</td>
+            </tr>
+            <tr>
+                <td>Kong Supplement</td>
+                <td class="points">2 / 20 / 40</td>
+                <td>2 points if the winning tile is from a kong supplement. 20 points if the winning tile is from a supplement as a result of two consecutive kongs. 40 points if 3 or more consecutive kongs.</td>
+            </tr>
+            <tr>
+                <td>Robbing a Kong</td>
+                <td class="points">1</td>
+                <td>1 point if the winning tile is obtained by robbing a kong.</td>
+            </tr>
+            <tr>
+                <td>Ten Discards</td>
+                <td class="points">10</td>
+                <td>10 points for a winning hand achieved within the first 10 tiles in the discard pool (inclusive of the 10th discard).</td>
+            </tr>
+            <tr>
+                <td>Concealed Hand</td>
+                <td class="points">3 / 5</td>
+                <td>3 points for a winning hand that is completely concealed (i.e., no melds). Winning tile can be obtained from a discard. 5 points if the winning tile is self-drawn.</td>
+            </tr>
+            <tr>
+                <td>Flower or Season</td>
+                <td class="points">1 / 2</td>
+                <td>1 point for every flower or season. 1 extra point if it is the player's own position.</td>
+            </tr>
+            <tr>
+                <td>Eight Flowers and Season</td>
+                <td class="points">70</td>
+                <td>70 points if you collect all 8 flowers and seasons. This is a winning hand regardless of what is actually in your hand.</td>
+            </tr>
+            <tr>
+                <td>Four Flowers / Four Seasons</td>
+                <td class="points">7</td>
+                <td>7 points for a winning hand that contains all 4 flowers or all 4 seasons. Collect 10 chips from each player when you get the fourth flower or season. This is yours to keep whether you win the hand or not.</td>
+            </tr>
+            <tr>
+                <td>Pung or Kong of Wind</td>
+                <td class="points">1 / 2 / 3</td>
+                <td>1 point for every pung or kong of a wind, whether concealed or melded. 1 extra point if it is the player's own wind. 1 extra point if it is the round's wind.</td>
+            </tr>
+            <tr>
+                <td>Melded Kong</td>
+                <td class="points">1</td>
+                <td>1 point for each melded kong in a winning hand.</td>
+            </tr>
+            <tr>
+                <td>Pung or Kong of Dragon</td>
+                <td class="points">2</td>
+                <td>2 points for every pung or kong of a dragon, whether concealed or melded.</td>
+            </tr>
+            <tr>
+                <td>Concealed Kong</td>
+                <td class="points">2</td>
+                <td>2 points for each concealed kong in a winning hand. Collect 5 chips from each player when you make a concealed kong. This is yours to keep whether you win the hand or not. You must show your concealed kong at the end of the game. If you fail to do so or reveal a false kong, pay each player 10 chips.</td>
+            </tr>
+            <tr>
+                <td>Four of a Kind</td>
+                <td class="points">3 / 10</td>
+                <td>3 points for a winning hand that contains 4 of a kind that is not in a kong. 10 points for the 2nd 4-of-a-kind. 10 points if all 4 tiles are concealed.</td>
+            </tr>
+            <tr>
+                <td>No Terminals</td>
+                <td class="points">3</td>
+                <td>3 points for a winning hand that contains no terminals (1s and 9s).</td>
+            </tr>
+            <tr>
+                <td>Scattered Terminals</td>
+                <td class="points">5 / 15</td>
+                <td>5 points for a winning hand where all sets and the pair contain a terminal, a wind, or a dragon. 15 points if all sets and the pair contain a terminal (no winds/dragons).</td>
+            </tr>
+            <tr>
+                <td>All Chows</td>
+                <td class="points">3 / 10</td>
+                <td>3 points for a winning hand that contains 5 chows and a pair. 10 points if there are also no winds, dragons, flowers, or seasons.</td>
+            </tr>
+            <tr>
+                <td>All Pungs</td>
+                <td class="points">20 / 100</td>
+                <td>20 points for a winning hand that contains 5 pungs or kongs and a pair. 100 points if all concealed and self-drawn.</td>
+            </tr>
+            <tr>
+                <td>Two / Three / Four Concealed Pungs</td>
+                <td class="points">3 / 10 / 20</td>
+                <td>3 points for a winning hand that contains 2 concealed pungs. 10 points for 3 concealed pungs. 20 points for 4 concealed Pungs. All kongs (even melded) are also considered concealed pungs.</td>
+            </tr>
+            <tr>
+                <td>Five Concealed Pungs</td>
+                <td class="points">70</td>
+                <td>70 points for a winning hand that contains 5 concealed pungs. All kongs (even melded) are also considered "Concealed Hand".</td>
+            </tr>
+            <tr>
+                <td>Terminal Pungs</td>
+                <td class="points">40 / 100</td>
+                <td>40 points for a winning hand that contains 5 pungs and a pair, all of which are terminals (1s and 9s), winds, or dragons. 100 points if terminals only.</td>
+            </tr>
+            <tr>
+                <td>All Melds</td>
+                <td class="points">5 / 10</td>
+                <td>5 points for a winning hand where all sets are melded from discards. 10 points if the winning tile is also from a discard.</td>
+            </tr>
+            <tr>
+                <td>All Pairs</td>
+                <td class="points">30 / 45</td>
+                <td>30 points for a winning hand that contains 8 pairs and a tile matching 1 of the 8 pairs. 45 points if the hand can also be rearranged into a regular winning hand.</td>
+            </tr>
+            <tr>
+                <td>One Point</td>
+                <td class="points">15</td>
+                <td>15 points for a winning hand that is only worth 1 point. Dealership and self-drawn points are not counted for the purpose of "One Point" but are added to the 15 instead.</td>
+            </tr>
+            <tr>
+                <td>Two Suits</td>
+                <td class="points">3</td>
+                <td>3 points for a winning hand that contains only 2 of the regular suits (i.e., Bamboos, Dots, & Characters). No Winds or Dragons.</td>
+            </tr>
+            <tr>
+                <td>All Five Suits</td>
+                <td class="points">3</td>
+                <td>3 points for a winning hand that contains all 5 suits (i.e., Bamboos, Dots, Characters, Winds, & Dragons).</td>
+            </tr>
+            <tr>
+                <td>One Suit + Winds or Dragons</td>
+                <td class="points">20</td>
+                <td>20 points for a winning hand that contains only 1 suit plus winds and/or dragons.</td>
+            </tr>
+            <tr>
+                <td>One Suit</td>
+                <td class="points">70</td>
+                <td>70 points for a winning hand that contains only 1 suit.</td>
+            </tr>
+            <tr>
+                <td>Twins</td>
+                <td class="points">3 / 13</td>
+                <td>3 points for a winning hand that contains 2 identical chows. 13 points for 2 sets of twins.</td>
+            </tr>
+            <tr>
+                <td>Triplets</td>
+                <td class="points">15</td>
+                <td>15 points for a winning hand that contains 3 identical chows.</td>
+            </tr>
+            <tr>
+                <td>Triplets and Twins</td>
+                <td class="points">23</td>
+                <td>23 points for a winning hand that contains a set of twins and a set of triplets.</td>
+            </tr>
+            <tr>
+                <td>Three Cousins</td>
+                <td class="points">10</td>
+                <td>10 points for a winning hand that contains 3 chows or 3 pungs of each suit with the same numerical values (e.g., 345 of characters, 345 of bamboos, and 345 of dots).</td>
+            </tr>
+            <tr>
+                <td>Little Three Dragons</td>
+                <td class="points">25</td>
+                <td>25 points for a winning hand that contains pungs of 2 dragons and a pair of the 3rd dragon.</td>
+            </tr>
+            <tr>
+                <td>Big Three Dragons</td>
+                <td class="points">50</td>
+                <td>50 points for a winning hand that contains pungs of all 3 dragons.</td>
+            </tr>
+            <tr>
+                <td>Little Four Winds</td>
+                <td class="points">50</td>
+                <td>50 points for a winning hand that contains pungs of 3 winds and a pair of the 4th wind. (Own/Round Wind points extra)</td>
+            </tr>
+            <tr>
+                <td>Big Four Winds</td>
+                <td class="points">70</td>
+                <td>70 points for a winning hand that contains pungs of all 4 winds. (No extra points for Own/Round Wind)</td>
+            </tr>
+            <tr>
+                <td>Open Straight / Closed Straight</td>
+                <td class="points">5 / 10</td>
+                <td>5 points for a winning hand that contains three chows from 1 to 9 (123, 456, 789) of the same suit. 10 points if all three chows are concealed.</td>
+            </tr>
+            <tr>
+                <td>Thirteen Wonders</td>
+                <td class="points">100</td>
+                <td>100 points for a winning hand that contains the terminals (1 and 9) of each suit, each wind, each dragon, one additional tile of the 13, and one set.</td>
+            </tr>
+            <tr>
+                <td>Earthly Hand / Heavenly Hand</td>
+                <td class="points">100</td>
+                <td>100 points if the winning hand is the original 17 tiles (for the dealer) or if the winning tile is the dealer's first discard (for non-dealers).</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

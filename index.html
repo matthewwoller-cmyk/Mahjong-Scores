@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mahjong Score Tracker</title>
     <style>
+    .rules-link { text-align: center; margin-bottom: 25px; }
+.rules-link a { color: #2980b9; text-decoration: none; font-weight: bold; padding: 8px 15px; border: 1px solid #2980b9; border-radius: 20px; transition: 0.2s; }
+.rules-link a:hover { background-color: #2980b9; color: white; }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fdfbf7;
@@ -353,8 +357,12 @@
         <button id="lang-zh" onclick="setLanguage('zh')">粵</button>
     </div>
 
-    <h1 id="ui-title">Mahjong Score Tracker</h1>
+        <h1 id="ui-title">Mahjong Score Tracker</h1>
     <div class="subtitle" id="ui-subtitle">Base 5 points auto-applied.</div>
+    
+    <div class="rules-link">
+        <a href="rules.html">📖 View Taiwanese Scoring Rules</a>
+    </div>
 
     <div class="top-controls">
         <button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button>

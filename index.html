@@ -45,7 +45,7 @@
             text-align: center;
             color: #2c3e50;
             margin-bottom: 5px;
-            margin-top: 30px; /* Space for language toggle */
+            margin-top: 30px;
         }
         .subtitle {
             text-align: center;
@@ -53,6 +53,30 @@
             margin-bottom: 20px;
             font-size: 0.9rem;
         }
+
+        /* Top Controls */
+        .top-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .top-controls button {
+            flex: 1;
+            max-width: 300px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .top-controls button:active:not(:disabled) { opacity: 0.8; }
+        .btn-undo { background-color: #f39c12; }
+        .btn-undo:disabled { background-color: #bdc3c7; cursor: not-allowed; box-shadow: none; }
         
         /* Master Scoreboard Styles */
         .master-scoreboard {
@@ -61,7 +85,7 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -75,7 +99,7 @@
             margin-bottom: 5px;
         }
         .combined-net-value {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: bold;
             margin-bottom: 20px;
             border-bottom: 1px solid #34495e;
@@ -93,6 +117,7 @@
         }
         .tally-item {
             flex: 1;
+            padding: 0 5px;
         }
         .tally-name {
             font-size: 0.95rem;
@@ -102,48 +127,139 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            padding: 0 5px;
         }
         .tally-value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
         }
         .tally-value.positive { color: #2ecc71; }
         .tally-value.negative { color: #e74c3c; }
         .tally-value.neutral { color: #ecf0f1; }
 
+        /* Manual Adjust Section */
+        .manual-adjust {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        .manual-adjust select, .manual-adjust input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 120px;
+        }
+        .manual-adjust-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .manual-adjust-btns button {
+            width: 50px;
+            padding: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .manual-adjust-btns button:active { opacity: 0.8; }
+        .btn-add { background-color: #27ae60; }
+        .btn-sub { background-color: #e74c3c; }
+
+        /* Board & Collapsible Cards */
         .board {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-        }
-        @media(min-width: 768px) {
-            .board {
-                flex-direction: row;
-                justify-content: space-between;
-            }
+            gap: 15px;
         }
         .player-card {
             background: #fff;
-            padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            flex: 1;
-            text-align: center;
-            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        /* Card Header (Always Visible) */
+        .card-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background-color: #fff;
+            user-select: none;
+        }
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .header-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .header-score {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: right;
+        }
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        .header-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: white;
+            margin-top: 4px;
+            font-size: 0.8rem;
+        }
+        .collapse-icon {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            transition: transform 0.3s ease;
+        }
+
+        /* Card Body (Collapsible Content) */
+        .card-body {
+            padding: 15px;
+            background-color: #fcfcfc;
+            border-top: 1px solid #eee;
         }
         .name-container {
-            margin-bottom: 10px;
-            min-height: 60px;
+            margin-bottom: 15px;
         }
         .name-input {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #2c3e50;
             text-align: center;
             border: none;
             border-bottom: 2px dashed #ccc;
-            width: 90%;
+            width: 100%;
             background: transparent;
             padding-bottom: 5px;
         }
@@ -151,37 +267,16 @@
             outline: none;
             border-bottom: 2px solid #3498db;
         }
-        .badge {
-            display: inline-block;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-top: 8px;
-        }
-        .badge-debt { background-color: #c0392b; }
-        .badge-banked { background-color: #27ae60; }
         
-        .score {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 10px 0;
-        }
         .positive { color: #27ae60; }
         .negative { color: #e74c3c; }
         .neutral { color: #34495e; }
+        .bg-debt { background-color: #c0392b; }
+        .bg-banked { background-color: #27ae60; }
         
-        .streak {
-            font-size: 0.95rem;
-            color: #7f8c8d;
-            font-weight: bold;
-            min-height: 2.5em;
-            margin-bottom: 15px;
-        }
         .points-input {
             width: calc(100% - 24px);
-            padding: 10px;
+            padding: 12px;
             font-size: 1.1rem;
             text-align: center;
             border: 2px solid #ddd;
@@ -193,8 +288,24 @@
             gap: 10px;
             margin-bottom: 10px;
         }
-        button {
+        .action-buttons button {
             flex: 1;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .action-buttons button:active:not(:disabled) { opacity: 0.8; }
+        .btn-win { background-color: #27ae60; }
+        .btn-lose { background-color: #e74c3c; }
+        
+        .btn-special { 
+            width: 100%; 
+            margin-top: 8px; 
             padding: 12px;
             font-size: 1rem;
             font-weight: bold;
@@ -202,16 +313,12 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: opacity 0.2s, background-color 0.2s;
         }
-        button:active:not(:disabled) { opacity: 0.8; }
-        .btn-win { background-color: #27ae60; }
-        .btn-lose { background-color: #e74c3c; }
-        
-        .btn-special { width: 100%; margin-top: 5px; }
+        .btn-special:active:not(:disabled) { opacity: 0.8; }
         .btn-half { background-color: #16a085; }
         .btn-surrender { background-color: #f39c12; }
         .btn-bank { background-color: #8e44ad; }
+        .btn-tally-local { background-color: #2980b9; margin-top: 20px; }
         
         .btn-special:disabled {
             background-color: #bdc3c7;
@@ -221,33 +328,7 @@
         
         .footer-controls {
             text-align: center;
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        .btn-undo {
-            background-color: #f39c12; 
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            color: white;
-        }
-        .btn-undo:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .btn-tally { 
-            background-color: #2980b9; 
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 30px;
         }
         .btn-hard-reset {
             background-color: transparent;
@@ -255,8 +336,9 @@
             border: 1px solid #e74c3c;
             padding: 10px 20px;
             font-size: 0.9rem;
-            width: auto;
-            margin-top: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
         .btn-hard-reset:hover {
             background-color: #e74c3c;
@@ -274,13 +356,17 @@
     <h1 id="ui-title">Mahjong Score Tracker</h1>
     <div class="subtitle" id="ui-subtitle">Base 5 points auto-applied.</div>
 
+    <div class="top-controls">
+        <button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button>
+    </div>
+
     <div class="master-scoreboard" id="master-scoreboard"></div>
+
+    <div class="manual-adjust" id="manual-adjust-container"></div>
 
     <div class="board" id="board"></div>
 
     <div class="footer-controls">
-        <button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button>
-        <button class="btn-tally" id="btn-tally" onclick="sweepToTally()">Pay & Update Tally</button>
         <button class="btn-hard-reset" id="btn-hard-reset" onclick="hardReset()">Hard Reset (Wipe Everything)</button>
     </div>
 
@@ -294,7 +380,7 @@
                 noStreak: "No active streak",
                 winStreak: "Win Streak",
                 lossStreak: "Loss Streak",
-                multiplier: "1.5x Multiplier Active",
+                multiplier: "1.5x Active",
                 handPoints: "Hand points",
                 winBtn: "Win (+)",
                 loseBtn: "Lose (-)",
@@ -305,12 +391,14 @@
                 undoBtn: "⟲ Undo Last Action",
                 tallyBtn: "Pay & Update Tally",
                 resetBtn: "Hard Reset (Wipe Everything)",
-                badgeDebt: "Set Aside Debt: ",
-                badgeBanked: "Banked Winnings: +",
+                badgeDebt: "Debt: ",
+                badgeBanked: "Banked: +",
+                adjustPlaceholder: "Amount",
+                targetTable: "Table Net Score",
                 confirmBank: "Do you want to bank your winnings of",
                 confirmSurrender: "Do you want to set aside your debt of",
                 confirmResetStreak: "points and reset your active streak?",
-                confirmPay: "End the round? This will add everyone's active scores and banked/debt points to the Master Scoreboard, and reset the board for a new round.",
+                confirmPlayerPay: "Update this player's tally? This will add their active score and banked/debt points to the Master Scoreboard, and reset their board.",
                 confirmWipe: "WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!"
             },
             zh: {
@@ -320,7 +408,7 @@
                 noStreak: "沒有連勝/連敗",
                 winStreak: "連勝",
                 lossStreak: "連敗",
-                multiplier: "1.5倍生效中",
+                multiplier: "1.5倍生效",
                 handPoints: "番數 / 分數",
                 winBtn: "贏 (+)",
                 loseBtn: "輸 (-)",
@@ -331,12 +419,14 @@
                 undoBtn: "⟲ 復原上一步",
                 tallyBtn: "找數並更新總結算",
                 resetBtn: "完全重置 (清除所有資料)",
-                badgeDebt: "記下欠債: ",
-                badgeBanked: "儲起贏分: +",
+                badgeDebt: "欠債: ",
+                badgeBanked: "儲起: +",
+                adjustPlaceholder: "手動調整分數",
+                targetTable: "全檯總結算",
                 confirmBank: "你確定要儲起",
                 confirmSurrender: "你確定要記下",
                 confirmResetStreak: "分並重置連擊嗎？",
-                confirmPay: "結束此局並找數？這會將所有人的活躍分數和儲起/欠債加到總結算，並重置版面以開始新一局。",
+                confirmPlayerPay: "更新此玩家的總結算？這會將他們的活躍分數和儲起/欠債加到總結算，並重置其版面。",
                 confirmWipe: "警告：確定要完全清除所有資料嗎？這會把總結算也一併刪除！"
             }
         };
@@ -350,20 +440,36 @@
         }
 
         const defaultPlayers = [
-            { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
-            { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
-            { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 }
+            { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
+            { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
+            { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false }
         ];
 
-        let players = JSON.parse(localStorage.getItem('mahjongData')) || defaultPlayers;
+        let players = defaultPlayers;
+        let tableOffset = 0;
         let historyStack = []; 
 
+        const savedData = JSON.parse(localStorage.getItem('mahjongData'));
+        if (savedData) {
+            if (Array.isArray(savedData)) {
+                players = savedData;
+            } else {
+                players = savedData.players || defaultPlayers;
+                tableOffset = savedData.tableOffset || 0;
+            }
+            // Ensure backwards compatibility for isExpanded property
+            players.forEach(p => { if(p.isExpanded === undefined) p.isExpanded = false; });
+        }
+
         function saveData() {
-            localStorage.setItem('mahjongData', JSON.stringify(players));
+            localStorage.setItem('mahjongData', JSON.stringify({ players, tableOffset }));
         }
 
         function saveStateForUndo() {
-            historyStack.push(JSON.parse(JSON.stringify(players)));
+            historyStack.push({
+                players: JSON.parse(JSON.stringify(players)),
+                tableOffset: tableOffset
+            });
             if (historyStack.length > 20) {
                 historyStack.shift();
             }
@@ -371,10 +477,40 @@
 
         function undoLastAction() {
             if (historyStack.length > 0) {
-                players = historyStack.pop(); 
+                const previousState = historyStack.pop(); 
+                players = previousState.players;
+                tableOffset = previousState.tableOffset;
                 saveData();
                 render();
             }
+        }
+
+        function applyManualAdjustment(isAdd) {
+            const target = document.getElementById('adjust-target').value;
+            const amountInput = document.getElementById('adjust-amount');
+            let amount = parseInt(amountInput.value);
+            
+            if (isNaN(amount) || amount <= 0) return;
+            
+            saveStateForUndo();
+            if (!isAdd) amount = -amount;
+
+            if (target === 'table') {
+                tableOffset += amount;
+            } else {
+                const idx = parseInt(target);
+                players[idx].runningTally += amount;
+            }
+            
+            amountInput.value = '';
+            saveData();
+            render();
+        }
+
+        function toggleCollapse(index) {
+            players[index].isExpanded = !players[index].isExpanded;
+            saveData(); // Save view state but don't add to undo history
+            render();
         }
 
         function halveScore(index) {
@@ -392,7 +528,7 @@
         }
 
         function render() {
-            const t = i18n[currentLang]; // Get current translations
+            const t = i18n[currentLang];
 
             // Update Language Toggle Buttons
             document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
@@ -402,21 +538,23 @@
             document.getElementById('ui-title').innerText = t.title;
             document.getElementById('ui-subtitle').innerText = t.subtitle;
             document.getElementById('btn-undo').innerText = t.undoBtn;
-            document.getElementById('btn-tally').innerText = t.tallyBtn;
             document.getElementById('btn-hard-reset').innerText = t.resetBtn;
 
             const board = document.getElementById('board');
             const scoreboard = document.getElementById('master-scoreboard');
+            const manualAdjustContainer = document.getElementById('manual-adjust-container');
             const undoBtn = document.getElementById('btn-undo');
             
             board.innerHTML = ''; 
             undoBtn.disabled = (historyStack.length === 0);
 
-            let globalNetScore = 0;
+            let globalNetScore = tableOffset;
             let playerTalliesHtml = '<div class="tally-row">';
+            let playerOptionsHtml = `<option value="table">${t.targetTable}</option>`;
 
             players.forEach((p, index) => {
                 globalNetScore += p.runningTally;
+                playerOptionsHtml += `<option value="${index}">${p.name}</option>`;
 
                 let tallyClass = 'neutral';
                 let displayTally = p.runningTally;
@@ -444,14 +582,30 @@
                     scoreClass = 'negative';
                 }
 
-                let streakHtml = `<div class="streak">${t.noStreak}</div>`;
+                // Collapsed header streak info
+                let headerStreakText = '';
                 if (p.streakCount > 0) {
                     const typeText = p.streakType === 'win' ? t.winStreak : t.lossStreak;
                     const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";
-                    streakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText}<br>(${t.multiplier})</div>`;
+                    headerStreakText = `<span style="color: ${color}; font-weight: bold;">${p.streakCount} ${typeText}</span>`;
                 }
 
-                // Surrender / Bank logic
+                // Collapsed header badge info
+                let headerBadgeHtml = '';
+                if (p.setAsidePoints < 0) {
+                    headerBadgeHtml = `<div class="header-badge bg-debt">${t.badgeDebt}${p.setAsidePoints}</div>`;
+                } else if (p.setAsidePoints > 0) {
+                    headerBadgeHtml = `<div class="header-badge bg-banked">${t.badgeBanked}${p.setAsidePoints}</div>`;
+                }
+
+                // Expanded view streak info
+                let expandedStreakHtml = `<div class="streak">${t.noStreak}</div>`;
+                if (p.streakCount > 0) {
+                    const typeText = p.streakType === 'win' ? t.winStreak : t.lossStreak;
+                    const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";
+                    expandedStreakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText}<br>(${t.multiplier})</div>`;
+                }
+
                 let isSpecialEnabled = (p.streakCount >= 3);
                 let specialBtnClass = 'btn-special';
                 let specialBtnText = t.bankNeed3;
@@ -465,33 +619,43 @@
                 }
 
                 let specialBtnHtml = `<button class="${specialBtnClass}" onclick="bankOrSurrender(${index})" ${isSpecialEnabled ? '' : 'disabled'}>${specialBtnText}</button>`;
-                
-                // Revenge Button
                 let halfBtnHtml = `<button class="btn-special btn-half" onclick="halveScore(${index})" ${p.score === 0 ? 'disabled' : ''}>${t.revengeBtn}</button>`;
-
-                let badgeHtml = '';
-                if (p.setAsidePoints < 0) {
-                    badgeHtml = `<div class="badge badge-debt">${t.badgeDebt}${p.setAsidePoints}</div>`;
-                } else if (p.setAsidePoints > 0) {
-                    badgeHtml = `<div class="badge badge-banked">${t.badgeBanked}${p.setAsidePoints}</div>`;
-                }
+                let tallyBtnHtml = `<button class="btn-special btn-tally-local" onclick="sweepPlayerToTally(${index})">${t.tallyBtn}</button>`;
 
                 const card = document.createElement('div');
                 card.className = 'player-card';
                 card.innerHTML = `
-                    <div class="name-container">
-                        <input type="text" class="name-input" value="${p.name}" onchange="updateName(${index}, this.value)">
-                        <br>${badgeHtml}
+                    <div class="card-header" onclick="toggleCollapse(${index})">
+                        <div class="header-left">
+                            <div class="header-name">${p.name}</div>
+                            <div class="header-score ${scoreClass}">${displayScore}</div>
+                        </div>
+                        <div class="header-right">
+                            <div class="header-info">
+                                ${headerStreakText}
+                                ${headerBadgeHtml}
+                            </div>
+                            <div class="collapse-icon" style="transform: rotate(${p.isExpanded ? '180deg' : '0deg'});">▼</div>
+                        </div>
                     </div>
-                    <div class="score ${scoreClass}">${displayScore}</div>
-                    ${streakHtml}
-                    <input type="number" id="points-${index}" class="points-input" placeholder="${t.handPoints}" min="0">
-                    <div class="action-buttons">
-                        <button class="btn-win" onclick="recordHand(${index}, 'win')">${t.winBtn}</button>
-                        <button class="btn-lose" onclick="recordHand(${index}, 'lose')">${t.loseBtn}</button>
+                    
+                    <div class="card-body" style="display: ${p.isExpanded ? 'block' : 'none'};">
+                        <div class="name-container">
+                            <input type="text" class="name-input" value="${p.name}" onchange="updateName(${index}, this.value)" placeholder="Edit Name">
+                        </div>
+                        
+                        ${expandedStreakHtml}
+                        <input type="number" id="points-${index}" class="points-input" placeholder="${t.handPoints}" min="0">
+                        
+                        <div class="action-buttons">
+                            <button class="btn-win" onclick="recordHand(${index}, 'win')">${t.winBtn}</button>
+                            <button class="btn-lose" onclick="recordHand(${index}, 'lose')">${t.loseBtn}</button>
+                        </div>
+                        
+                        ${halfBtnHtml}
+                        ${specialBtnHtml}
+                        ${tallyBtnHtml}
                     </div>
-                    ${halfBtnHtml}
-                    ${specialBtnHtml}
                 `;
                 board.appendChild(card);
             });
@@ -511,6 +675,15 @@
                 <div class="combined-net-label">${t.netScore}</div>
                 <div class="combined-net-value ${netClass}">${netDisplay}</div>
                 ${playerTalliesHtml}
+            `;
+
+            manualAdjustContainer.innerHTML = `
+                <select id="adjust-target">${playerOptionsHtml}</select>
+                <input type="number" id="adjust-amount" placeholder="${t.adjustPlaceholder}" min="0">
+                <div class="manual-adjust-btns">
+                    <button class="btn-add" onclick="applyManualAdjustment(true)">+</button>
+                    <button class="btn-sub" onclick="applyManualAdjustment(false)">-</button>
+                </div>
             `;
         }
 
@@ -547,6 +720,9 @@
                 p.score -= totalHandPoints;
             }
 
+            // Optional: Automatically clear the input field after scoring
+            pointsInput.value = '';
+            
             saveData(); 
             render();
         }
@@ -569,17 +745,16 @@
             }
         }
 
-        function sweepToTally() {
-            if (confirm(i18n[currentLang].confirmPay)) {
+        function sweepPlayerToTally(index) {
+            if (confirm(i18n[currentLang].confirmPlayerPay)) {
                 saveStateForUndo(); 
                 
-                players.forEach(p => {
-                    p.runningTally += (p.score + p.setAsidePoints);
-                    p.score = 0;
-                    p.streakType = null;
-                    p.streakCount = 0;
-                    p.setAsidePoints = 0;
-                });
+                let p = players[index];
+                p.runningTally += (p.score + p.setAsidePoints);
+                p.score = 0;
+                p.streakType = null;
+                p.streakCount = 0;
+                p.setAsidePoints = 0;
                 
                 saveData(); 
                 render();
@@ -589,11 +764,11 @@
         function hardReset() {
             if (confirm(i18n[currentLang].confirmWipe)) {
                 historyStack = []; 
-                
+                tableOffset = 0;
                 players = [
-                    { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
-                    { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
-                    { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 }
+                    { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
+                    { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
+                    { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false }
                 ];
                 
                 saveData(); 

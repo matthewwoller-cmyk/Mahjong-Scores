@@ -1,810 +1,932 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahjong Score Tracker</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fdfbf7;
-            color: #333;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-        }
-        
-        /* Language Toggle Styles */
-        .lang-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            background: #e0e0e0;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .lang-toggle button {
-            background: transparent;
-            border: none;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            color: #7f8c8d;
-            font-weight: bold;
-            transition: 0.3s;
-            border-radius: 20px;
-        }
-        .lang-toggle button.active {
-            background: #2c3e50;
-            color: white;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            margin-top: 30px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-        
-        /* Rules Link */
-        .rules-link { 
-            text-align: center; 
-            margin-bottom: 25px; 
-        }
-        .rules-link a { 
-            color: #2980b9; 
-            text-decoration: none; 
-            font-weight: bold; 
-            padding: 8px 15px; 
-            border: 1px solid #2980b9; 
-            border-radius: 20px; 
-            transition: 0.2s; 
-        }
-        .rules-link a:hover { 
-            background-color: #2980b9; 
-            color: white; 
-        }
-
-        /* Top Controls */
-        .top-controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-        .top-controls button {
-            flex: 1;
-            max-width: 300px;
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .top-controls button:active:not(:disabled) { opacity: 0.8; }
-        .btn-undo { background-color: #f39c12; }
-        .btn-undo:disabled { background-color: #bdc3c7; cursor: not-allowed; box-shadow: none; }
-        
-        /* Master Scoreboard Styles */
-        .master-scoreboard {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .combined-net-label {
-            font-size: 1rem;
-            color: #bdc3c7;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-        .combined-net-value {
-            font-size: 3.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #34495e;
-            padding-bottom: 20px;
-            width: 100%;
-        }
-        .combined-net-value.positive { color: #2ecc71; }
-        .combined-net-value.negative { color: #e74c3c; }
-        .combined-net-value.neutral { color: #ecf0f1; }
-
-        .tally-row {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-        }
-        .tally-item {
-            flex: 1;
-            padding: 0 5px;
-        }
-        .tally-name {
-            font-size: 0.95rem;
-            color: #bdc3c7;
-            font-weight: bold;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .tally-value {
-            font-size: 1.6rem;
-            font-weight: bold;
-        }
-        .tally-value.positive { color: #2ecc71; }
-        .tally-value.negative { color: #e74c3c; }
-        .tally-value.neutral { color: #ecf0f1; }
-
-        /* Manual Adjust Section */
-        .manual-adjust {
-            background: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-        }
-        .manual-adjust-label {
-            font-weight: bold;
-            color: #7f8c8d;
-            padding: 0 10px;
-        }
-        .manual-adjust input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1rem;
-            flex: 1;
-            min-width: 120px;
-        }
-        .manual-adjust-btns {
-            display: flex;
-            gap: 10px;
-        }
-        .manual-adjust-btns button {
-            width: 50px;
-            padding: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .manual-adjust-btns button:active { opacity: 0.8; }
-        .btn-add { background-color: #27ae60; }
-        .btn-sub { background-color: #e74c3c; }
-
-        /* Board & Collapsible Cards */
-        .board {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .player-card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        /* Card Header (Always Visible) */
-        .card-header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            background-color: #fff;
-            user-select: none;
-        }
-        .header-left {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .header-name {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        .header-score {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-align: right;
-        }
-        .header-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            font-size: 0.85rem;
-            color: #7f8c8d;
-        }
-        .header-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            color: white;
-            margin-top: 4px;
-            font-size: 0.8rem;
-        }
-        .collapse-icon {
-            font-size: 1.2rem;
-            color: #bdc3c7;
-            transition: transform 0.3s ease;
-        }
-
-        /* Card Body (Collapsible Content) */
-        .card-body {
-            padding: 15px;
-            background-color: #fcfcfc;
-            border-top: 1px solid #eee;
-        }
-        .name-container {
-            margin-bottom: 15px;
-        }
-        .name-input {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #2c3e50;
-            text-align: center;
-            border: none;
-            border-bottom: 2px dashed #ccc;
-            width: 100%;
-            background: transparent;
-            padding-bottom: 5px;
-        }
-        .name-input:focus {
-            outline: none;
-            border-bottom: 2px solid #3498db;
-        }
-        
-        .positive { color: #27ae60; }
-        .negative { color: #e74c3c; }
-        .neutral { color: #34495e; }
-        .bg-debt { background-color: #c0392b; }
-        .bg-banked { background-color: #27ae60; }
-        
-        .points-input {
-            width: calc(100% - 24px);
-            padding: 12px;
-            font-size: 1.1rem;
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .action-buttons button {
-            flex: 1;
-            padding: 12px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .action-buttons button:active:not(:disabled) { opacity: 0.8; }
-        .btn-win { background-color: #27ae60; }
-        .btn-lose { background-color: #e74c3c; }
-        
-        .btn-special { 
-            width: 100%; 
-            margin-top: 8px; 
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: bold;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .btn-special:active:not(:disabled) { opacity: 0.8; }
-        .btn-half { background-color: #16a085; }
-        .btn-surrender { background-color: #f39c12; }
-        .btn-bank { background-color: #8e44ad; }
-        .btn-tally-local { background-color: #2980b9; margin-top: 20px; }
-        
-        .btn-special:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-            color: #7f8c8d;
-        }
-        
-        .footer-controls {
-            text-align: center;
-            margin-top: 30px;
-        }
-        .btn-hard-reset {
-            background-color: transparent;
-            color: #e74c3c;
-            border: 1px solid #e74c3c;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .btn-hard-reset:hover {
-            background-color: #e74c3c;
-            color: white;
-        }
-    </style>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.5">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
 </head>
 <body>
-
-    <div class="lang-toggle">
-        <button id="lang-en" onclick="setLanguage('en')">EN</button>
-        <button id="lang-zh" onclick="setLanguage('zh')">粵</button>
-    </div>
-
-    <h1 id="ui-title">Mahjong Score Tracker</h1>
-    <div class="subtitle" id="ui-subtitle">Base 5 points auto-applied.</div>
-    
-    <div class="rules-link">
-        <a href="rules.html" id="ui-rules">📖 View Taiwanese Scoring Rules</a>
-    </div>
-
-    <div class="top-controls">
-        <button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button>
-    </div>
-
-    <div class="master-scoreboard" id="master-scoreboard"></div>
-
-    <div class="manual-adjust" id="manual-adjust-container"></div>
-
-    <div class="board" id="board"></div>
-
-    <div class="footer-controls">
-        <button class="btn-hard-reset" id="btn-hard-reset" onclick="hardReset()">Hard Reset (Wipe Everything)</button>
-    </div>
-
-    <script>
-        // --- Translations Dictionary ---
-        const i18n = {
-            en: {
-                title: "Mahjong Score Tracker",
-                subtitle: "Base 5 points auto-applied.",
-                rulesLink: "📖 View Taiwanese Scoring Rules",
-                netScore: "Combined Table Net Score",
-                noStreak: "No active streak",
-                winStreak: "Win Streak",
-                lossStreak: "Loss Streak",
-                multiplier: "1.5x Active",
-                handPoints: "Hand points",
-                winBtn: "Win (+)",
-                loseBtn: "Lose (-)",
-                revengeBtn: "Revenge",
-                bankNeed3: "Bank / Surrender (Need 3 Streak)",
-                bankWinnings: "Bank Winnings & Reset",
-                surrenderDebt: "Surrender & Set Aside Debt",
-                undoBtn: "⟲ Undo Last Action",
-                tallyBtn: "Pay & Update Tally",
-                resetBtn: "Hard Reset (Wipe Everything)",
-                badgeDebt: "Debt: ",
-                badgeBanked: "Banked: +",
-                adjustPlaceholder: "Amount",
-                targetTable: "Table Net Score",
-                confirmBank: "Do you want to bank your winnings of",
-                confirmSurrender: "Do you want to set aside your debt of",
-                confirmResetStreak: "points and reset your active streak?",
-                confirmPlayerPay: "Update this player's tally? This will add their active score and banked/debt points to the Master Scoreboard, and reset their board.",
-                confirmWipe: "WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!"
-            },
-            zh: {
-                title: "麻雀計分器",
-                subtitle: "自動加上5分底分。",
-                rulesLink: "📖 查看台灣麻雀計分規則",
-                netScore: "全檯總結算",
-                noStreak: "沒有連勝/連敗",
-                winStreak: "連勝",
-                lossStreak: "連敗",
-                multiplier: "1.5倍生效",
-                handPoints: "番數 / 分數",
-                winBtn: "贏 (+)",
-                loseBtn: "輸 (-)",
-                revengeBtn: "報仇",
-                bankNeed3: "儲起 / 投降 (需連中3次)",
-                bankWinnings: "儲起贏分並重置",
-                surrenderDebt: "投降並記下欠債",
-                undoBtn: "⟲ 復原上一步",
-                tallyBtn: "找數並更新總結算",
-                resetBtn: "完全重置 (清除所有資料)",
-                badgeDebt: "欠債: ",
-                badgeBanked: "儲起: +",
-                adjustPlaceholder: "手動調整分數",
-                targetTable: "全檯總結算",
-                confirmBank: "你確定要儲起",
-                confirmSurrender: "你確定要記下",
-                confirmResetStreak: "分並重置連擊嗎？",
-                confirmPlayerPay: "更新此玩家的總結算？這會將他們的活躍分數和儲起/欠債加到總結算，並重置其版面。",
-                confirmWipe: "警告：確定要完全清除所有資料嗎？這會把總結算也一併刪除！"
-            }
-        };
-
-        let currentLang = localStorage.getItem('mahjongLang') || 'en';
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            localStorage.setItem('mahjongLang', lang);
-            render();
-        }
-
-        const defaultPlayers = [
-            { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
-            { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
-            { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false }
-        ];
-
-        let players = defaultPlayers;
-        let tableOffset = 0;
-        let historyStack = []; 
-
-        const savedData = JSON.parse(localStorage.getItem('mahjongData'));
-        if (savedData) {
-            if (Array.isArray(savedData)) {
-                players = savedData;
-            } else {
-                players = savedData.players || defaultPlayers;
-                tableOffset = savedData.tableOffset || 0;
-            }
-            players.forEach(p => { if(p.isExpanded === undefined) p.isExpanded = false; });
-        }
-
-        function saveData() {
-            localStorage.setItem('mahjongData', JSON.stringify({ players, tableOffset }));
-        }
-
-        function saveStateForUndo() {
-            historyStack.push({
-                players: JSON.parse(JSON.stringify(players)),
-                tableOffset: tableOffset
-            });
-            if (historyStack.length > 20) {
-                historyStack.shift();
-            }
-        }
-
-        function undoLastAction() {
-            if (historyStack.length > 0) {
-                const previousState = historyStack.pop(); 
-                players = previousState.players;
-                tableOffset = previousState.tableOffset;
-                saveData();
-                render();
-            }
-        }
-
-        function applyManualAdjustment(isAdd) {
-            const amountInput = document.getElementById('adjust-amount');
-            let amount = parseInt(amountInput.value);
-            
-            if (isNaN(amount) || amount <= 0) return;
-            
-            saveStateForUndo();
-            if (!isAdd) amount = -amount;
-
-            tableOffset += amount;
-            
-            amountInput.value = '';
-            saveData();
-            render();
-        }
-
-        function toggleCollapse(index) {
-            players[index].isExpanded = !players[index].isExpanded;
-            saveData(); 
-            render();
-        }
-
-        function halveScore(index) {
-            saveStateForUndo(); 
-            let p = players[index];
-            
-            // Step 1: Halve the score based on positive/negative
-            if (p.score > 0) {
-                p.score = Math.floor(p.score / 2);
-            } else if (p.score < 0) {
-                p.score = Math.ceil(p.score / 2);
-            }
-            
-            // Step 2: Automatically pay out and update tally
-            p.runningTally += (p.score + p.setAsidePoints);
-            
-            // Step 3: Reset the player's active board
-            p.score = 0;
-            p.streakType = null;
-            p.streakCount = 0;
-            p.setAsidePoints = 0;
-            
-            saveData();
-            render();
-        }
-
-        function render() {
-            const t = i18n[currentLang];
-
-            // Update Language Toggle Buttons
-            document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
-            document.getElementById('lang-zh').classList.toggle('active', currentLang === 'zh');
-
-            // Update Static Text
-            document.getElementById('ui-title').innerText = t.title;
-            document.getElementById('ui-subtitle').innerText = t.subtitle;
-            document.getElementById('ui-rules').innerText = t.rulesLink;
-            document.getElementById('btn-undo').innerText = t.undoBtn;
-            document.getElementById('btn-hard-reset').innerText = t.resetBtn;
-
-            const board = document.getElementById('board');
-            const scoreboard = document.getElementById('master-scoreboard');
-            const manualAdjustContainer = document.getElementById('manual-adjust-container');
-            const undoBtn = document.getElementById('btn-undo');
-            
-            board.innerHTML = ''; 
-            undoBtn.disabled = (historyStack.length === 0);
-
-            let globalNetScore = tableOffset;
-            let playerTalliesHtml = '<div class="tally-row">';
-
-            players.forEach((p, index) => {
-                globalNetScore += p.runningTally;
-
-                let tallyClass = 'neutral';
-                let displayTally = p.runningTally;
-                if (p.runningTally > 0) {
-                    tallyClass = 'positive';
-                    displayTally = "+" + p.runningTally;
-                } else if (p.runningTally < 0) {
-                    tallyClass = 'negative';
-                }
-
-                playerTalliesHtml += `
-                    <div class="tally-item">
-                        <div class="tally-name">${p.name}</div>
-                        <div class="tally-value ${tallyClass}">${displayTally}</div>
-                    </div>
-                `;
-
-                // --- Build the Player Cards ---
-                let scoreClass = 'neutral';
-                let displayScore = p.score;
-                if (p.score > 0) {
-                    scoreClass = 'positive';
-                    displayScore = "+" + p.score;
-                } else if (p.score < 0) {
-                    scoreClass = 'negative';
-                }
-
-                let headerStreakText = '';
-                if (p.streakCount > 0) {
-                    const typeText = p.streakType === 'win' ? t.winStreak : t.lossStreak;
-                    const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";
-                    headerStreakText = `<span style="color: ${color}; font-weight: bold;">${p.streakCount} ${typeText}</span>`;
-                }
-
-                let headerBadgeHtml = '';
-                if (p.setAsidePoints < 0) {
-                    headerBadgeHtml = `<div class="header-badge bg-debt">${t.badgeDebt}${p.setAsidePoints}</div>`;
-                } else if (p.setAsidePoints > 0) {
-                    headerBadgeHtml = `<div class="header-badge bg-banked">${t.badgeBanked}${p.setAsidePoints}</div>`;
-                }
-
-                let expandedStreakHtml = `<div class="streak">${t.noStreak}</div>`;
-                if (p.streakCount > 0) {
-                    const typeText = p.streakType === 'win' ? t.winStreak : t.lossStreak;
-                    const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";
-                    expandedStreakHtml = `<div class="streak" style="color: ${color}">${p.streakCount} ${typeText}<br>(${t.multiplier})</div>`;
-                }
-
-                let isSpecialEnabled = (p.streakCount >= 3);
-                let specialBtnClass = 'btn-special';
-                let specialBtnText = t.bankNeed3;
-                
-                if (p.streakType === 'win') {
-                    specialBtnClass += ' btn-bank';
-                    specialBtnText = t.bankWinnings;
-                } else if (p.streakType === 'lose') {
-                    specialBtnClass += ' btn-surrender';
-                    specialBtnText = t.surrenderDebt;
-                }
-
-                let specialBtnHtml = `<button class="${specialBtnClass}" onclick="bankOrSurrender(${index})" ${isSpecialEnabled ? '' : 'disabled'}>${specialBtnText}</button>`;
-                let halfBtnHtml = `<button class="btn-special btn-half" onclick="halveScore(${index})" ${p.score === 0 ? 'disabled' : ''}>${t.revengeBtn}</button>`;
-                let tallyBtnHtml = `<button class="btn-special btn-tally-local" onclick="sweepPlayerToTally(${index})">${t.tallyBtn}</button>`;
-
-                const card = document.createElement('div');
-                card.className = 'player-card';
-                card.innerHTML = `
-                    <div class="card-header" onclick="toggleCollapse(${index})">
-                        <div class="header-left">
-                            <div class="header-name">${p.name}</div>
-                            <div class="header-score ${scoreClass}">${displayScore}</div>
-                        </div>
-                        <div class="header-right">
-                            <div class="header-info">
-                                ${headerStreakText}
-                                ${headerBadgeHtml}
-                            </div>
-                            <div class="collapse-icon" style="transform: rotate(${p.isExpanded ? '180deg' : '0deg'});">▼</div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-body" style="display: ${p.isExpanded ? 'block' : 'none'};">
-                        <div class="name-container">
-                            <input type="text" class="name-input" value="${p.name}" onchange="updateName(${index}, this.value)" placeholder="Edit Name">
-                        </div>
-                        
-                        ${expandedStreakHtml}
-                        <input type="number" id="points-${index}" class="points-input" placeholder="${t.handPoints}" min="0">
-                        
-                        <div class="action-buttons">
-                            <button class="btn-win" onclick="recordHand(${index}, 'win')">${t.winBtn}</button>
-                            <button class="btn-lose" onclick="recordHand(${index}, 'lose')">${t.loseBtn}</button>
-                        </div>
-                        
-                        ${halfBtnHtml}
-                        ${specialBtnHtml}
-                        ${tallyBtnHtml}
-                    </div>
-                `;
-                board.appendChild(card);
-            });
-
-            playerTalliesHtml += '</div>';
-
-            let netClass = 'neutral';
-            let netDisplay = globalNetScore;
-            if (globalNetScore > 0) {
-                netClass = 'positive';
-                netDisplay = "+" + globalNetScore;
-            } else if (globalNetScore < 0) {
-                netClass = 'negative';
-            }
-
-            scoreboard.innerHTML = `
-                <div class="combined-net-label">${t.netScore}</div>
-                <div class="combined-net-value ${netClass}">${netDisplay}</div>
-                ${playerTalliesHtml}
-            `;
-
-            manualAdjustContainer.innerHTML = `
-                <div class="manual-adjust-label">${t.targetTable}:</div>
-                <input type="number" id="adjust-amount" placeholder="${t.adjustPlaceholder}" min="0">
-                <div class="manual-adjust-btns">
-                    <button class="btn-add" onclick="applyManualAdjustment(true)">+</button>
-                    <button class="btn-sub" onclick="applyManualAdjustment(false)">-</button>
-                </div>
-            `;
-        }
-
-        function updateName(index, newName) {
-            saveStateForUndo();
-            players[index].name = newName;
-            saveData(); 
-            render(); 
-        }
-
-        function recordHand(index, resultType) {
-            saveStateForUndo(); 
-            
-            const pointsInput = document.getElementById(`points-${index}`);
-            const inputPoints = parseInt(pointsInput.value);
-            const points = isNaN(inputPoints) ? 0 : inputPoints; 
-            const totalHandPoints = points + 5; 
-
-            let p = players[index];
-
-            if (p.streakType === resultType) {
-                let currentMagnitude = Math.abs(p.score);
-                let newMagnitude = Math.ceil(currentMagnitude * 1.5);
-                p.score = p.score >= 0 ? newMagnitude : -newMagnitude;
-                p.streakCount++;
-            } else {
-                p.streakType = resultType;
-                p.streakCount = 1;
-            }
-
-            if (resultType === 'win') {
-                p.score += totalHandPoints;
-            } else {
-                p.score -= totalHandPoints;
-            }
-
-            pointsInput.value = '';
-            
-            saveData(); 
-            render();
-        }
-
-        function bankOrSurrender(index) {
-            let p = players[index];
-            const t = i18n[currentLang];
-            let actionText = p.score > 0 ? t.confirmBank : t.confirmSurrender;
-            
-            if (confirm(`${actionText} ${p.score} ${t.confirmResetStreak}`)) {
-                saveStateForUndo(); 
-                
-                p.setAsidePoints += p.score; 
-                p.score = 0;
-                p.streakType = null;
-                p.streakCount = 0;
-                
-                saveData(); 
-                render();
-            }
-        }
-
-        function sweepPlayerToTally(index) {
-            if (confirm(i18n[currentLang].confirmPlayerPay)) {
-                saveStateForUndo(); 
-                
-                let p = players[index];
-                p.runningTally += (p.score + p.setAsidePoints);
-                p.score = 0;
-                p.streakType = null;
-                p.streakCount = 0;
-                p.setAsidePoints = 0;
-                
-                saveData(); 
-                render();
-            }
-        }
-
-        function hardReset() {
-            if (confirm(i18n[currentLang].confirmWipe)) {
-                historyStack = []; 
-                tableOffset = 0;
-                players = [
-                    { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
-                    { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
-                    { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false }
-                ];
-                
-                saveData(); 
-                render();
-            }
-        }
-
-        render();
-    </script>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Mahjong Score Tracker&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #fdfbf7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #333;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 900px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: relative;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Language Toggle Styles */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.lang-toggle {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: absolute;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>right: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #e0e0e0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.lang-toggle button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.9rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #7f8c8d;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: 0.3s;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.lang-toggle button.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #2c3e50;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>h1 {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #2c3e50;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 30px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.subtitle {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #7f8c8d;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.9rem;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Rules Link */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.rules-link {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 25px;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.rules-link a {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #2980b9;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-decoration: none;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px 15px;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #2980b9;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 20px;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: 0.2s;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.rules-link a:hover {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #2980b9;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Top Controls */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.top-controls {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 25px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.top-controls button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 300px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: opacity 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 6px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.top-controls button:active:not(:disabled) { opacity: 0.8; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-undo { background-color: #f39c12; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-undo:disabled { background-color: #bdc3c7; cursor: not-allowed; box-shadow: none; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Master Scoreboard Styles */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.master-scoreboard {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #2c3e50;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 10px rgba(0,0,0,0.15);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.combined-net-label {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #bdc3c7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-transform: uppercase;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>letter-spacing: 1px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.combined-net-value {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 3.5rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid #34495e;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.combined-net-value.positive { color: #2ecc71; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.combined-net-value.negative { color: #e74c3c; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.combined-net-value.neutral { color: #ecf0f1; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tally-row {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-around;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tally-item {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 0 5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tally-name {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.95rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #bdc3c7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>white-space: nowrap;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-overflow: ellipsis;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tally-value {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.6rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tally-value.positive { color: #2ecc71; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tally-value.negative { color: #e74c3c; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tally-value.neutral { color: #ecf0f1; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Manual Adjust Section */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.manual-adjust {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #fff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 10px rgba(0,0,0,0.05);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 25px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.manual-adjust-label {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #7f8c8d;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 0 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.manual-adjust input {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #ccc;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>min-width: 120px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.manual-adjust-btns {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.manual-adjust-btns button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 50px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: opacity 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.manual-adjust-btns button:active { opacity: 0.8; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-add { background-color: #27ae60; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-sub { background-color: #e74c3c; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Board &amp; Collapsible Cards */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.board {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.player-card {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #fff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 4px 10px rgba(0,0,0,0.08);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s ease;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-header {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #fff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>user-select: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-left {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: flex-start;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-name {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #2c3e50;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-score {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.8rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-right {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: right;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-info {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: flex-end;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.85rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #7f8c8d;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.header-badge {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: inline-block;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 3px 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 4px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.8rem;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.collapse-icon {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #bdc3c7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: transform 0.3s ease;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card-body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #fcfcfc;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-top: 1px solid #eee;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.name-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.name-input {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #2c3e50;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 2px dashed #ccc;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding-bottom: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.name-input:focus {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>outline: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 2px solid #3498db;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.positive { color: #27ae60; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.negative { color: #e74c3c; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.neutral { color: #34495e; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.bg-debt { background-color: #c0392b; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.bg-banked { background-color: #27ae60; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.points-input {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: calc(100% - 24px);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 2px solid #ddd;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.action-buttons {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.action-buttons button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: opacity 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.action-buttons button:active:not(:disabled) { opacity: 0.8; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-win { background-color: #27ae60; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-lose { background-color: #e74c3c; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-special {<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 8px;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-special:active:not(:disabled) { opacity: 0.8; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-half { background-color: #16a085; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-surrender { background-color: #f39c12; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-bank { background-color: #8e44ad; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-tally-local { background-color: #2980b9; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-special:disabled {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #bdc3c7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: not-allowed;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #7f8c8d;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.footer-controls {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 30px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-hard-reset {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #e74c3c;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #e74c3c;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 10px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 0.9rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: background-color 0.2s;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.btn-hard-reset:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #e74c3c;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Modal Styles */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal-overlay {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 0; left: 0; width: 100%; height: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.6);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 1000;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal-content {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #fff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 90%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 400px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 10px 25px rgba(0,0,0,0.2);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal-content h2 {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: #2c3e50;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal-content input {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #ccc;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.1rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal-content button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #2980b9;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.2rem;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal-content button:active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.8;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-overlay" id="name-modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="modal-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2 id="modal-title"&gt;Enter Player Names&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" id="p1-name" placeholder="Player 1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" id="p2-name" placeholder="Player 2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" id="p3-name" placeholder="Player 3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button onclick="saveInitialNames()" id="modal-btn"&gt;Start Game&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="lang-toggle"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="lang-en" onclick="setLanguage('en')"&gt;EN&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button id="lang-zh" onclick="setLanguage('zh')"&gt;粵&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;h1 id="ui-title"&gt;Mahjong Score Tracker&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="subtitle" id="ui-subtitle"&gt;Base 5 points auto-applied.&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="rules-link"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;a href="rules.html" id="ui-rules"&gt;📖 View Taiwanese Scoring Rules&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="top-controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled&gt;⟲ Undo Last Action&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="master-scoreboard" id="master-scoreboard"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="manual-adjust" id="manual-adjust-container"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="board" id="board"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="footer-controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="btn-hard-reset" id="btn-hard-reset" onclick="hardReset()"&gt;Hard Reset (Wipe Everything)&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Translations Dictionary ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const i18n = {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>en: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: "Mahjong Score Tracker",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>subtitle: "Base 5 points auto-applied.",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>rulesLink: "📖 View Taiwanese Scoring Rules",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>netScore: "Combined Table Net Score",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>noStreak: "No active streak",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>winStreak: "Win Streak",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>lossStreak: "Loss Streak",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>multiplier: "1.5x Active",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>handPoints: "Hand points",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>winBtn: "Win (+)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>loseBtn: "Lose (-)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>revengeBtn: "Revenge &amp; Update Tally",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bankNeed3: "Bank / Surrender (Need 3 Streak)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bankWinnings: "Bank Winnings &amp; Reset",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>surrenderDebt: "Surrender &amp; Set Aside Debt",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>undoBtn: "⟲ Undo Last Action",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>tallyBtn: "Pay/Collect &amp; Update Tally",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>resetBtn: "Hard Reset (Wipe Everything)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>badgeDebt: "Debt: ",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>badgeBanked: "Banked: +",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>adjustPlaceholder: "Amount",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>targetTable: "Table Net Score",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modalTitle: "Enter Player Names",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>player: "Player",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modalBtn: "Start Game",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmBank: "Do you want to bank your winnings of",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmSurrender: "Do you want to set aside your debt of",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmResetStreak: "points and reset your active streak?",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmPlayerPay: "Update this player's tally? This will add their active score and banked/debt points to the Master Scoreboard, and reset their board.",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmWipe: "WARNING: Are you sure you want to completely WIPE EVERYTHING? This will delete the Master Scoreboard too!"</p>
+<p class="p1"><span class="Apple-converted-space">            </span>},</p>
+<p class="p1"><span class="Apple-converted-space">            </span>zh: {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>title: "麻雀計分器",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>subtitle: "自動加上5分底分。",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>rulesLink: "📖 查看台灣麻雀計分規則",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>netScore: "全檯總結算",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>noStreak: "沒有連勝/連敗",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>winStreak: "連勝",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>lossStreak: "連敗",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>multiplier: "1.5倍生效",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>handPoints: "番數 / 分數",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>winBtn: "贏 (+)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>loseBtn: "輸 (-)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>revengeBtn: "報仇並更新總結算",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bankNeed3: "儲起 / 投降 (需連中3次)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bankWinnings: "儲起贏分並重置",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>surrenderDebt: "投降並記下欠債",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>undoBtn: "⟲ 復原上一步",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>tallyBtn: "收/付並更新總結算",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>resetBtn: "完全重置 (清除所有資料)",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>badgeDebt: "欠債: ",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>badgeBanked: "儲起: +",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>adjustPlaceholder: "手動調整分數",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>targetTable: "全檯總結算",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modalTitle: "輸入玩家名稱",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>player: "玩家",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>modalBtn: "開始遊戲",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmBank: "你確定要儲起",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmSurrender: "你確定要記下",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmResetStreak: "分並重置連擊嗎？",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmPlayerPay: "更新此玩家的總結算？這會將他們的活躍分數和儲起/欠債加到總結算，並重置其版面。",</p>
+<p class="p1"><span class="Apple-converted-space">                </span>confirmWipe: "警告：確定要完全清除所有資料嗎？這會把總結算也一併刪除！"</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let currentLang = localStorage.getItem('mahjongLang') || 'en';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function setLanguage(lang) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>currentLang = lang;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>localStorage.setItem('mahjongLang', lang);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const defaultPlayers = [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let players = defaultPlayers;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let tableOffset = 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let historyStack = [];<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>let isFirstLaunch = !localStorage.getItem('mahjongData');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>const savedData = JSON.parse(localStorage.getItem('mahjongData'));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>if (savedData) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (Array.isArray(savedData)) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>players = savedData;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>players = savedData.players || defaultPlayers;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>tableOffset = savedData.tableOffset || 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>players.forEach(p =&gt; { if(p.isExpanded === undefined) p.isExpanded = false; });</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>window.onload = function() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isFirstLaunch) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showNameModal();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showNameModal() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const t = i18n[currentLang];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('modal-title').innerText = t.modalTitle;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p1-name').placeholder = t.player + " 1";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p2-name').placeholder = t.player + " 2";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p3-name').placeholder = t.player + " 3";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('modal-btn').innerText = t.modalBtn;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Pre-fill if they already have custom names (from a reset)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p1-name').value = players[0].name.startsWith("Player") || players[0].name.startsWith("玩家") ? "" : players[0].name;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p2-name').value = players[1].name.startsWith("Player") || players[1].name.startsWith("玩家") ? "" : players[1].name;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p3-name').value = players[2].name.startsWith("Player") || players[2].name.startsWith("玩家") ? "" : players[2].name;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('name-modal').style.display = 'flex';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function saveInitialNames() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const t = i18n[currentLang];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const p1 = document.getElementById('p1-name').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const p2 = document.getElementById('p2-name').value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const p3 = document.getElementById('p3-name').value.trim();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>players[0].name = p1 || (t.player + " 1");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>players[1].name = p2 || (t.player + " 2");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>players[2].name = p3 || (t.player + " 3");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('name-modal').style.display = 'none';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveData();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function saveData() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>localStorage.setItem('mahjongData', JSON.stringify({ players, tableOffset }));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function saveStateForUndo() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>historyStack.push({</p>
+<p class="p1"><span class="Apple-converted-space">                </span>players: JSON.parse(JSON.stringify(players)),</p>
+<p class="p1"><span class="Apple-converted-space">                </span>tableOffset: tableOffset</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (historyStack.length &gt; 20) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>historyStack.shift();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function undoLastAction() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (historyStack.length &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const previousState = historyStack.pop();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>players = previousState.players;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>tableOffset = previousState.tableOffset;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>saveData();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function applyManualAdjustment(isAdd) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const amountInput = document.getElementById('adjust-amount');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let amount = parseInt(amountInput.value);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (isNaN(amount) || amount &lt;= 0) return;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveStateForUndo();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (!isAdd) amount = -amount;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>tableOffset += amount;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>amountInput.value = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveData();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function toggleCollapse(index) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>players[index].isExpanded = !players[index].isExpanded;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveData();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function halveScore(index) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveStateForUndo();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let p = players[index];</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (p.score &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.score = Math.floor(p.score / 2);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (p.score &lt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.score = Math.ceil(p.score / 2);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>p.runningTally += (p.score + p.setAsidePoints);</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>p.score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>p.streakType = null;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>p.streakCount = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>p.setAsidePoints = 0;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveData();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function render() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const t = i18n[currentLang];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Update Language Toggle Buttons</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('lang-zh').classList.toggle('active', currentLang === 'zh');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Update Static Text</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('ui-title').innerText = t.title;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('ui-subtitle').innerText = t.subtitle;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('ui-rules').innerText = t.rulesLink;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('btn-undo').innerText = t.undoBtn;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('btn-hard-reset').innerText = t.resetBtn;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Update Modal text dynamically in case language switches while it's open</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('modal-title').innerText = t.modalTitle;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p1-name').placeholder = t.player + " 1";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p2-name').placeholder = t.player + " 2";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('p3-name').placeholder = t.player + " 3";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('modal-btn').innerText = t.modalBtn;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const board = document.getElementById('board');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const scoreboard = document.getElementById('master-scoreboard');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const manualAdjustContainer = document.getElementById('manual-adjust-container');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const undoBtn = document.getElementById('btn-undo');</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>board.innerHTML = '';<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>undoBtn.disabled = (historyStack.length === 0);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let globalNetScore = tableOffset;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let playerTalliesHtml = '&lt;div class="tally-row"&gt;';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>players.forEach((p, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>globalNetScore += p.runningTally;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let tallyClass = 'neutral';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let displayTally = p.runningTally;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (p.runningTally &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>tallyClass = 'positive';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>displayTally = "+" + p.runningTally;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (p.runningTally &lt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>tallyClass = 'negative';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>playerTalliesHtml += `</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="tally-item"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="tally-name"&gt;${p.name}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="tally-value ${tallyClass}"&gt;${displayTally}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// --- Build the Player Cards ---</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let scoreClass = 'neutral';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let displayScore = p.score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (p.score &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>scoreClass = 'positive';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>displayScore = "+" + p.score;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (p.score &lt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>scoreClass = 'negative';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let headerStreakText = '';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (p.streakCount &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const typeText = p.streakType === 'win' ? t.winStreak : t.lossStreak;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>headerStreakText = `&lt;span style="color: ${color}; font-weight: bold;"&gt;${p.streakCount} ${typeText}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let headerBadgeHtml = '';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (p.setAsidePoints &lt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>headerBadgeHtml = `&lt;div class="header-badge bg-debt"&gt;${t.badgeDebt}${p.setAsidePoints}&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (p.setAsidePoints &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>headerBadgeHtml = `&lt;div class="header-badge bg-banked"&gt;${t.badgeBanked}${p.setAsidePoints}&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let expandedStreakHtml = `&lt;div class="streak"&gt;${t.noStreak}&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (p.streakCount &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const typeText = p.streakType === 'win' ? t.winStreak : t.lossStreak;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const color = p.streakType === 'win' ? "#27ae60" : "#e74c3c";</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>expandedStreakHtml = `&lt;div class="streak" style="color: ${color}"&gt;${p.streakCount} ${typeText}&lt;br&gt;(${t.multiplier})&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let isSpecialEnabled = (p.streakCount &gt;= 3);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let specialBtnClass = 'btn-special';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let specialBtnText = t.bankNeed3;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (p.streakType === 'win') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>specialBtnClass += ' btn-bank';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>specialBtnText = t.bankWinnings;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else if (p.streakType === 'lose') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>specialBtnClass += ' btn-surrender';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>specialBtnText = t.surrenderDebt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Ordered Special Buttons</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let specialBtnHtml = `&lt;button class="${specialBtnClass}" onclick="bankOrSurrender(${index})" ${isSpecialEnabled ? '' : 'disabled'}&gt;${specialBtnText}&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let halfBtnHtml = `&lt;button class="btn-special btn-half" onclick="halveScore(${index})" ${p.score === 0 ? 'disabled' : ''}&gt;${t.revengeBtn}&lt;/button&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let tallyBtnHtml = `&lt;button class="btn-special btn-tally-local" onclick="sweepPlayerToTally(${index})"&gt;${t.tallyBtn}&lt;/button&gt;`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>const card = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>card.className = 'player-card';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>card.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="card-header" onclick="toggleCollapse(${index})"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="header-left"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="header-name"&gt;${p.name}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="header-score ${scoreClass}"&gt;${displayScore}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="header-right"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="header-info"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>${headerStreakText}</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>${headerBadgeHtml}</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="collapse-icon" style="transform: rotate(${p.isExpanded ? '180deg' : '0deg'});"&gt;▼&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="card-body" style="display: ${p.isExpanded ? 'block' : 'none'};"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="name-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;input type="text" class="name-input" value="${p.name}" onchange="updateName(${index}, this.value)" placeholder="Edit Name"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${expandedStreakHtml}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;input type="number" id="points-${index}" class="points-input" placeholder="${t.handPoints}" min="0"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="action-buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button class="btn-win" onclick="recordHand(${index}, 'win')"&gt;${t.winBtn}&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button class="btn-lose" onclick="recordHand(${index}, 'lose')"&gt;${t.loseBtn}&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${specialBtnHtml}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${halfBtnHtml}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>${tallyBtnHtml}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>board.appendChild(card);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>playerTalliesHtml += '&lt;/div&gt;';</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let netClass = 'neutral';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let netDisplay = globalNetScore;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (globalNetScore &gt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>netClass = 'positive';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>netDisplay = "+" + globalNetScore;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (globalNetScore &lt; 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>netClass = 'negative';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>scoreboard.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="combined-net-label"&gt;${t.netScore}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="combined-net-value ${netClass}"&gt;${netDisplay}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>${playerTalliesHtml}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>manualAdjustContainer.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="manual-adjust-label"&gt;${t.targetTable}:&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;input type="number" id="adjust-amount" placeholder="${t.adjustPlaceholder}" min="0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="manual-adjust-btns"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button class="btn-add" onclick="applyManualAdjustment(true)"&gt;+&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button class="btn-sub" onclick="applyManualAdjustment(false)"&gt;-&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function updateName(index, newName) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveStateForUndo();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>players[index].name = newName;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveData();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>render();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function recordHand(index, resultType) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveStateForUndo();<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const pointsInput = document.getElementById(`points-${index}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const inputPoints = parseInt(pointsInput.value);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const points = isNaN(inputPoints) ? 0 : inputPoints;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const totalHandPoints = points + 5;<span class="Apple-converted-space"> </span></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let p = players[index];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (p.streakType === resultType) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let currentMagnitude = Math.abs(p.score);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>let newMagnitude = Math.ceil(currentMagnitude * 1.5);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.score = p.score &gt;= 0 ? newMagnitude : -newMagnitude;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.streakCount++;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.streakType = resultType;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.streakCount = 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (resultType === 'win') {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.score += totalHandPoints;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.score -= totalHandPoints;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>pointsInput.value = '';</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>saveData();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function bankOrSurrender(index) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let p = players[index];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const t = i18n[currentLang];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let actionText = p.score &gt; 0 ? t.confirmBank : t.confirmSurrender;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (confirm(`${actionText} ${p.score} ${t.confirmResetStreak}`)) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>saveStateForUndo();<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.setAsidePoints += p.score;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.streakType = null;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.streakCount = 0;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>saveData();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function sweepPlayerToTally(index) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (confirm(i18n[currentLang].confirmPlayerPay)) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>saveStateForUndo();<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>let p = players[index];</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.runningTally += (p.score + p.setAsidePoints);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.streakType = null;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.streakCount = 0;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>p.setAsidePoints = 0;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>saveData();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function hardReset() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (confirm(i18n[currentLang].confirmWipe)) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>historyStack = [];<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>tableOffset = 0;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>players = [</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false }</p>
+<p class="p1"><span class="Apple-converted-space">                </span>];</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>saveData();<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>showNameModal(); // Prompt for names after a hard reset</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>render();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
 </body>
 </html>

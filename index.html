@@ -15,7 +15,26 @@
             position: relative;
         }
         
-        /* Language Toggle Styles */
+        /* Start New Game (Reset) Button - Top Left */
+        .btn-hard-reset {
+            background-color: #ff69b4; /* Hot Pink */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            transition: opacity 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .btn-hard-reset:active { opacity: 0.8; }
+
+        /* Language Toggle - Top Right */
         .lang-toggle {
             position: absolute;
             top: 20px;
@@ -24,6 +43,7 @@
             background: #e0e0e0;
             border-radius: 20px;
             overflow: hidden;
+            z-index: 10;
         }
         .lang-toggle button {
             background: transparent;
@@ -45,7 +65,7 @@
             text-align: center;
             color: #2c3e50;
             margin-bottom: 5px;
-            margin-top: 30px;
+            margin-top: 50px; /* Space for the top buttons */
         }
         .subtitle {
             text-align: center;
@@ -130,9 +150,6 @@
         .btn-bank { background-color: #8e44ad; }
         .btn-tally-local { background-color: #2980b9; }
         .btn-special:disabled { background-color: #bdc3c7; cursor: not-allowed; color: #7f8c8d; }
-        
-        .footer-controls { text-align: center; margin-top: 30px; }
-        .btn-hard-reset { background-color: transparent; color: #e74c3c; border: 1px solid #e74c3c; padding: 10px 20px; font-size: 0.9rem; border-radius: 8px; cursor: pointer; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
@@ -141,6 +158,8 @@
     </style>
 </head>
 <body>
+
+    <button class="btn-hard-reset" id="btn-hard-reset" onclick="hardReset()">Start New Game (reset)</button>
 
     <div class="modal-overlay" id="name-modal">
         <div class="modal-content">
@@ -165,11 +184,8 @@
     <div class="master-scoreboard" id="master-scoreboard"></div>
     <div class="manual-adjust" id="manual-adjust-container"></div>
     <div class="board" id="board"></div>
-    <div class="footer-controls"><button class="btn-hard-reset" id="btn-hard-reset" onclick="hardReset()">Hard Reset (Wipe Everything)</button></div>
 
     <script>
-        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-
         const i18n = {
             en: {
                 title: "Mahjong Score Tracker", subtitle: "Base 5 points auto-applied.", rulesLink: "📖 View Taiwanese Scoring Rules",
@@ -177,11 +193,11 @@
                 multiplier: "1.5x Active", handPoints: "Hand points", winBtn: "Win (+)", loseBtn: "Lose (-)",
                 revengeBtn: "Revenge & Update Tally", bankNeed3: "Bank / Surrender (Need 3 Streak)", bankWinnings: "Bank Winnings & Reset",
                 surrenderDebt: "Surrender & Set Aside Debt", undoBtn: "⟲ Undo Last Action", tallyBtn: "Pay/Collect & Update Tally",
-                resetBtn: "Hard Reset (Wipe Everything)", badgeDebt: "Debt: ", badgeBanked: "Banked: +", adjustPlaceholder: "Amount",
+                resetBtn: "Start New Game (reset)", badgeDebt: "Debt: ", badgeBanked: "Banked: +", adjustPlaceholder: "Amount",
                 targetTable: "Table Net Score", modalTitle: "Enter Player Names", player: "Player", modalBtn: "Start Game",
                 confirmBank: "Do you want to bank your winnings of", confirmSurrender: "Do you want to set aside your debt of",
                 confirmResetStreak: "points and reset your active streak?", confirmPlayerPay: "Update this player's tally?", 
-                confirmWipe: "WARNING: Wipe everything?", confirmStartOver: "It's been over 24 hours since your last game. Would you like to start a new game?"
+                confirmWipe: "WARNING: Start a new game and wipe everything?"
             },
             zh: {
                 title: "麻雀計分器", subtitle: "自動加上5分底分。", rulesLink: "📖 查看台灣麻雀計分規則",
@@ -189,11 +205,10 @@
                 multiplier: "1.5倍生效", handPoints: "番數 / 分數", winBtn: "贏 (+)", loseBtn: "輸 (-)",
                 revengeBtn: "報仇並更新總結算", bankNeed3: "儲起 / 投降 (需連中3次)", bankWinnings: "儲起贏分並重置",
                 surrenderDebt: "投降並記下欠債", undoBtn: "⟲ 復原上一步", tallyBtn: "收/付並更新總結算",
-                resetBtn: "完全重置 (清除所有資料)", badgeDebt: "欠債: ", badgeBanked: "儲起: +", adjustPlaceholder: "手動調整分數",
+                resetBtn: "開始新遊戲 (重置)", badgeDebt: "欠債: ", badgeBanked: "儲起: +", adjustPlaceholder: "手動調整分數",
                 targetTable: "全檯總結算", modalTitle: "輸入玩家名稱", player: "玩家", modalBtn: "開始遊戲",
                 confirmBank: "你確定要儲起", confirmSurrender: "你確定要記下", confirmResetStreak: "分並重置連擊嗎？",
-                confirmPlayerPay: "更新此玩家的總結算？", confirmWipe: "警告：確定要完全清除所有資料嗎？",
-                confirmStartOver: "距離上一局已超過 24 小時。你想開始新一局嗎？"
+                confirmPlayerPay: "更新此玩家的總結算？", confirmWipe: "警告：確定要開始新遊戲並清除資料嗎？"
             }
         };
 
@@ -208,28 +223,9 @@
         let tableOffset = 0;
         let historyStack = [];
 
-        function checkExpiry() {
-            const data = JSON.parse(localStorage.getItem('mahjongData'));
-            if (data && data.timestamp) {
-                const now = new Date().getTime();
-                if (now - data.timestamp > TWENTY_FOUR_HOURS) {
-                    if (confirm(i18n[currentLang].confirmStartOver)) {
-                        localStorage.removeItem('mahjongData');
-                        return true; // Start over
-                    } else {
-                        saveData(); // User wants to keep data, refresh timestamp
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
-
         function loadData() {
             const data = JSON.parse(localStorage.getItem('mahjongData'));
-            const dataExpiredAndUserReset = checkExpiry();
-
-            if (data && !dataExpiredAndUserReset) {
+            if (data) {
                 players = data.players || defaultPlayers;
                 tableOffset = data.tableOffset || 0;
             } else {
@@ -240,7 +236,7 @@
         }
 
         function saveData() {
-            localStorage.setItem('mahjongData', JSON.stringify({ players, tableOffset, timestamp: new Date().getTime() }));
+            localStorage.setItem('mahjongData', JSON.stringify({ players, tableOffset }));
         }
 
         function saveStateForUndo() {
@@ -337,6 +333,7 @@
             document.getElementById('ui-rules').innerText = t.rulesLink;
             document.getElementById('btn-undo').innerText = t.undoBtn;
             document.getElementById('btn-undo').disabled = historyStack.length === 0;
+            document.getElementById('btn-hard-reset').innerText = t.resetBtn;
             document.getElementById('lang-en').className = currentLang === 'en' ? 'active' : '';
             document.getElementById('lang-zh').className = currentLang === 'zh' ? 'active' : '';
 

@@ -65,7 +65,7 @@
             text-align: center;
             color: #2c3e50;
             margin-bottom: 5px;
-            margin-top: 50px; /* Space for the top buttons */
+            margin-top: 50px;
         }
         .subtitle {
             text-align: center;
@@ -103,17 +103,16 @@
         }
         .combined-net-label { font-size: 1rem; color: #bdc3c7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .combined-net-value { font-size: 3.5rem; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #34495e; padding-bottom: 20px; width: 100%; }
-        .combined-net-value.positive { color: #2ecc71; }
-        .combined-net-value.negative { color: #e74c3c; }
-        .combined-net-value.neutral { color: #ecf0f1; }
+        
+        /* Strict Color Rules */
+        .positive { color: #27ae60 !important; }
+        .negative { color: #e74c3c !important; }
+        .neutral { color: #34495e; }
 
         .tally-row { display: flex; justify-content: space-around; width: 100%; }
         .tally-item { flex: 1; padding: 0 5px; }
         .tally-name { font-size: 0.95rem; color: #bdc3c7; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .tally-value { font-size: 1.6rem; font-weight: bold; }
-        .tally-value.positive { color: #2ecc71; }
-        .tally-value.negative { color: #e74c3c; }
-        .tally-value.neutral { color: #ecf0f1; }
 
         .manual-adjust {
             background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -134,9 +133,7 @@
         .header-score { font-size: 1.8rem; font-weight: bold; }
         .header-right { display: flex; align-items: center; gap: 15px; }
         .header-info { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.85rem; color: #7f8c8d; }
-        .header-badge { display: inline-block; padding: 3px 8px; border-radius: 8px; font-weight: bold; color: white; margin-top: 4px; font-size: 0.8rem; }
-        .collapse-icon { font-size: 1.2rem; color: #bdc3c7; transition: transform 0.3s ease; }
-
+        
         .card-body { padding: 15px; background-color: #fcfcfc; border-top: 1px solid #eee; }
         .points-input { width: calc(100% - 24px); padding: 12px; font-size: 1.1rem; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
         .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -144,6 +141,24 @@
         .btn-win { background-color: #27ae60; }
         .btn-lose { background-color: #e74c3c; }
         
+        /* New Layout Styles */
+        .update-tally-section {
+            margin-top: 15px;
+            border-top: 1px dashed #ddd;
+            padding-top: 10px;
+        }
+        .update-tally-section h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+
         .btn-special { width: 100%; margin-top: 8px; padding: 12px; font-size: 1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
         .btn-half { background-color: #16a085; }
         .btn-surrender { background-color: #f39c12; }
@@ -155,6 +170,13 @@
         .modal-content { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; text-align: center; }
         .modal-content button { width: 100%; padding: 15px; background: #2980b9; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+
+        /* Tally label in player box */
+        .set-aside-tally {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -191,10 +213,12 @@
                 title: "Mahjong Score Tracker", subtitle: "Base 5 points auto-applied.", rulesLink: "📖 View Taiwanese Scoring Rules",
                 netScore: "Combined Table Net Score", noStreak: "No active streak", winStreak: "Win Streak", lossStreak: "Loss Streak",
                 multiplier: "1.5x Active", handPoints: "Hand points", winBtn: "Win (+)", loseBtn: "Lose (-)",
-                revengeBtn: "Revenge & Update Tally", bankNeed3: "Bank / Surrender (Need 3 Streak)", bankWinnings: "Bank Winnings & Reset",
-                surrenderDebt: "Surrender & Set Aside Debt", undoBtn: "⟲ Undo Last Action", tallyBtn: "Pay/Collect & Update Tally",
-                resetBtn: "Start New Game (reset)", badgeDebt: "Debt: ", badgeBanked: "Banked: +", adjustPlaceholder: "Amount",
-                targetTable: "Table Net Score", modalTitle: "Enter Player Names", player: "Player", modalBtn: "Start Game",
+                revengeBtn: "Revenge", tallyBtn: "Pay/Collect", // Shortened
+                bankNeed3: "Bank / Surrender (Need 3 Streak)", bankWinnings: "Bank Winnings & Reset",
+                surrenderDebt: "Surrender & Set Aside Debt", undoBtn: "⟲ Undo Last Action", 
+                resetBtn: "Start New Game (reset)", badgeDebt: "Set Aside: ", badgeBanked: "Set Aside: +", 
+                adjustPlaceholder: "Amount", targetTable: "Table Net Score", modalTitle: "Enter Player Names", 
+                player: "Player", modalBtn: "Start Game", updateTallyHeader: "Update Tally",
                 confirmBank: "Do you want to bank your winnings of", confirmSurrender: "Do you want to set aside your debt of",
                 confirmResetStreak: "points and reset your active streak?", confirmPlayerPay: "Update this player's tally?", 
                 confirmWipe: "WARNING: Start a new game and wipe everything?"
@@ -203,10 +227,12 @@
                 title: "麻雀計分器", subtitle: "自動加上5分底分。", rulesLink: "📖 查看台灣麻雀計分規則",
                 netScore: "全檯總結算", noStreak: "沒有連勝/連敗", winStreak: "連勝", lossStreak: "連敗",
                 multiplier: "1.5倍生效", handPoints: "番數 / 分數", winBtn: "贏 (+)", loseBtn: "輸 (-)",
-                revengeBtn: "報仇並更新總結算", bankNeed3: "儲起 / 投降 (需連中3次)", bankWinnings: "儲起贏分並重置",
-                surrenderDebt: "投降並記下欠債", undoBtn: "⟲ 復原上一步", tallyBtn: "收/付並更新總結算",
-                resetBtn: "開始新遊戲 (重置)", badgeDebt: "欠債: ", badgeBanked: "儲起: +", adjustPlaceholder: "手動調整分數",
-                targetTable: "全檯總結算", modalTitle: "輸入玩家名稱", player: "玩家", modalBtn: "開始遊戲",
+                revengeBtn: "報仇", tallyBtn: "收/付", 
+                bankNeed3: "儲起 / 投降 (需連中3次)", bankWinnings: "儲起贏分並重置",
+                surrenderDebt: "投降並記下欠債", undoBtn: "⟲ 復原上一步", 
+                resetBtn: "開始新遊戲 (重置)", badgeDebt: "已記下: ", badgeBanked: "已儲起: +", 
+                adjustPlaceholder: "手動調整分數", targetTable: "全檯總結算", modalTitle: "輸入玩家名稱", 
+                player: "玩家", modalBtn: "開始遊戲", updateTallyHeader: "更新找數",
                 confirmBank: "你確定要儲起", confirmSurrender: "你確定要記下", confirmResetStreak: "分並重置連擊嗎？",
                 confirmPlayerPay: "更新此玩家的總結算？", confirmWipe: "警告：確定要開始新遊戲並清除資料嗎？"
             }
@@ -255,9 +281,6 @@
         function showNameModal() {
             const t = i18n[currentLang];
             document.getElementById('modal-title').innerText = t.modalTitle;
-            document.getElementById('p1-name').placeholder = t.player + " 1";
-            document.getElementById('p2-name').placeholder = t.player + " 2";
-            document.getElementById('p3-name').placeholder = t.player + " 3";
             document.getElementById('modal-btn').innerText = t.modalBtn;
             document.getElementById('name-modal').style.display = 'flex';
         }
@@ -348,24 +371,48 @@
                 talliesHtml += `<div class="tally-item"><div class="tally-name">${p.name}</div><div class="tally-value ${tCls}">${p.runningTally > 0 ? '+' : ''}${p.runningTally}</div></div>`;
 
                 const sCls = p.score > 0 ? 'positive' : (p.score < 0 ? 'negative' : 'neutral');
-                const badge = p.setAsidePoints !== 0 ? `<div class="header-badge ${p.setAsidePoints > 0 ? 'bg-banked' : 'bg-debt'}">${p.setAsidePoints > 0 ? t.badgeBanked : t.badgeDebt}${p.setAsidePoints}</div>` : '';
-                const streak = p.streakCount > 0 ? `<span style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.streakCount} ${p.streakType === 'win' ? t.winStreak : t.lossStreak}</span>` : '';
+                
+                // Banked Score logic
+                const setAsideCls = p.setAsidePoints > 0 ? 'positive' : (p.setAsidePoints < 0 ? 'negative' : '');
+                const setAsideText = p.setAsidePoints !== 0 ? `<div class="set-aside-tally ${setAsideCls}">${p.setAsidePoints > 0 ? t.badgeBanked : t.badgeDebt}${p.setAsidePoints}</div>` : '';
+                
+                const streakLabel = p.streakCount > 0 ? `<span style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.streakCount} ${p.streakType === 'win' ? t.winStreak : t.lossStreak}</span>` : '';
 
                 const card = document.createElement('div');
                 card.className = 'player-card';
                 card.innerHTML = `
                     <div class="card-header" onclick="toggleCollapse(${i})">
-                        <div class="header-left"><div class="header-name">${p.name}</div><div class="header-score ${sCls}">${p.score > 0 ? '+' : ''}${p.score}</div></div>
-                        <div class="header-right"><div class="header-info">${streak}${badge}</div><div class="collapse-icon" style="transform:rotate(${p.isExpanded ? 180 : 0}deg)">▼</div></div>
+                        <div class="header-left">
+                            <div class="header-name">${p.name}</div>
+                            <div class="header-score ${sCls}">${p.score > 0 ? '+' : ''}${p.score}</div>
+                        </div>
+                        <div class="header-right">
+                            <div class="header-info">
+                                ${streakLabel}
+                                ${setAsideText}
+                            </div>
+                            <div class="collapse-icon" style="transform:rotate(${p.isExpanded ? 180 : 0}deg)">▼</div>
+                        </div>
                     </div>
                     <div class="card-body" style="display:${p.isExpanded ? 'block' : 'none'}">
                         <div class="streak" style="text-align:center;margin-bottom:10px;font-size:0.9rem;color:#7f8c8d">${p.streakCount > 0 ? p.streakCount + ' ' + (p.streakType === 'win' ? t.winStreak : t.lossStreak) + '<br>' + t.multiplier : t.noStreak}</div>
+                        
                         <input type="number" id="points-${i}" class="points-input" placeholder="${t.handPoints}">
-                        <div class="action-buttons"><button class="btn-win" onclick="recordHand(${i},'win')">${t.winBtn}</button><button class="btn-lose" onclick="recordHand(${i},'lose')">${t.loseBtn}</button></div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn-win" onclick="recordHand(${i},'win')">${t.winBtn}</button>
+                            <button class="btn-lose" onclick="recordHand(${i},'lose')">${t.loseBtn}</button>
+                        </div>
                         
                         <button class="btn-special ${p.streakType === 'win' ? 'btn-bank' : 'btn-surrender'}" onclick="bankOrSurrender(${i})" ${p.streakCount >= 3 ? '' : 'disabled'}>${p.streakType === 'win' ? t.bankWinnings : t.surrenderDebt}</button>
-                        <button class="btn-special btn-half" onclick="halveScore(${i})" ${p.score === 0 ? 'disabled' : ''}>${t.revengeBtn}</button>
-                        <button class="btn-special btn-tally-local" onclick="sweepPlayerToTally(${i})">${t.tallyBtn}</button>
+                        
+                        <div class="update-tally-section">
+                            <h3>${t.updateTallyHeader}</h3>
+                            <div class="btn-row">
+                                <button class="btn-special btn-half" onclick="halveScore(${i})" ${p.score === 0 ? 'disabled' : ''}>${t.revengeBtn}</button>
+                                <button class="btn-special btn-tally-local" onclick="sweepPlayerToTally(${i})">${t.tallyBtn}</button>
+                            </div>
+                        </div>
                     </div>`;
                 board.appendChild(card);
             });

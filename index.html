@@ -180,7 +180,8 @@
                 resetBtn: "Hard Reset (Wipe Everything)", badgeDebt: "Debt: ", badgeBanked: "Banked: +", adjustPlaceholder: "Amount",
                 targetTable: "Table Net Score", modalTitle: "Enter Player Names", player: "Player", modalBtn: "Start Game",
                 confirmBank: "Do you want to bank your winnings of", confirmSurrender: "Do you want to set aside your debt of",
-                confirmResetStreak: "points and reset your active streak?", confirmPlayerPay: "Update this player's tally?", confirmWipe: "WARNING: Wipe everything?"
+                confirmResetStreak: "points and reset your active streak?", confirmPlayerPay: "Update this player's tally?", 
+                confirmWipe: "WARNING: Wipe everything?", confirmStartOver: "It's been over 24 hours since your last game. Would you like to start a new game?"
             },
             zh: {
                 title: "麻雀計分器", subtitle: "自動加上5分底分。", rulesLink: "📖 查看台灣麻雀計分規則",
@@ -191,7 +192,8 @@
                 resetBtn: "完全重置 (清除所有資料)", badgeDebt: "欠債: ", badgeBanked: "儲起: +", adjustPlaceholder: "手動調整分數",
                 targetTable: "全檯總結算", modalTitle: "輸入玩家名稱", player: "玩家", modalBtn: "開始遊戲",
                 confirmBank: "你確定要儲起", confirmSurrender: "你確定要記下", confirmResetStreak: "分並重置連擊嗎？",
-                confirmPlayerPay: "更新此玩家的總結算？", confirmWipe: "警告：確定要完全清除所有資料嗎？"
+                confirmPlayerPay: "更新此玩家的總結算？", confirmWipe: "警告：確定要完全清除所有資料嗎？",
+                confirmStartOver: "距離上一局已超過 24 小時。你想開始新一局嗎？"
             }
         };
 
@@ -209,18 +211,25 @@
         function checkExpiry() {
             const data = JSON.parse(localStorage.getItem('mahjongData'));
             if (data && data.timestamp) {
-                if (new Date().getTime() - data.timestamp > TWENTY_FOUR_HOURS) {
-                    localStorage.removeItem('mahjongData');
-                    return true;
+                const now = new Date().getTime();
+                if (now - data.timestamp > TWENTY_FOUR_HOURS) {
+                    if (confirm(i18n[currentLang].confirmStartOver)) {
+                        localStorage.removeItem('mahjongData');
+                        return true; // Start over
+                    } else {
+                        saveData(); // User wants to keep data, refresh timestamp
+                        return false;
+                    }
                 }
             }
             return false;
         }
 
         function loadData() {
-            const expired = checkExpiry();
             const data = JSON.parse(localStorage.getItem('mahjongData'));
-            if (data && !expired) {
+            const dataExpiredAndUserReset = checkExpiry();
+
+            if (data && !dataExpiredAndUserReset) {
                 players = data.players || defaultPlayers;
                 tableOffset = data.tableOffset || 0;
             } else {
@@ -250,6 +259,9 @@
         function showNameModal() {
             const t = i18n[currentLang];
             document.getElementById('modal-title').innerText = t.modalTitle;
+            document.getElementById('p1-name').placeholder = t.player + " 1";
+            document.getElementById('p2-name').placeholder = t.player + " 2";
+            document.getElementById('p3-name').placeholder = t.player + " 3";
             document.getElementById('modal-btn').innerText = t.modalBtn;
             document.getElementById('name-modal').style.display = 'flex';
         }

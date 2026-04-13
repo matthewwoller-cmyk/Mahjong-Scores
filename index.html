@@ -65,7 +65,7 @@
             text-align: center;
             color: #2c3e50;
             margin-bottom: 5px;
-            margin-top: 50px;
+            margin-top: 60px;
         }
         .subtitle {
             text-align: center;
@@ -104,25 +104,19 @@
         .combined-net-label { font-size: 1rem; color: #bdc3c7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .combined-net-value { font-size: 3.5rem; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #34495e; padding-bottom: 20px; width: 100%; }
         
-        /* Strict Color Rules */
         .positive { color: #27ae60 !important; }
         .negative { color: #e74c3c !important; }
         .neutral { color: #34495e; }
 
         .tally-row { display: flex; justify-content: space-around; width: 100%; }
         .tally-item { 
-            flex: 1; 
-            padding: 10px 5px; 
-            cursor: pointer; 
-            border-radius: 8px;
-            transition: background 0.2s;
+            flex: 1; padding: 10px 5px; cursor: pointer; border-radius: 8px; transition: background 0.2s;
         }
-        .tally-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .tally-name { font-size: 0.95rem; color: #bdc3c7; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tally-value { font-size: 1.6rem; font-weight: bold; }
+        .tally-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .tally-name { font-size: 0.85rem; color: #bdc3c7; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tally-value { font-size: 1.4rem; font-weight: bold; }
 
+        /* Manual Adjust Section */
         .manual-adjust {
             background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;
@@ -134,28 +128,67 @@
         .btn-add { background-color: #27ae60; }
         .btn-sub { background-color: #e74c3c; }
 
-        .board { display: flex; flex-direction: column; gap: 15px; }
+        /* 3-COLUMN GRID BOARD */
+        .board { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            align-items: start;
+        }
+        
         .player-card { 
             background: #fff; 
             border-radius: 12px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
             overflow: hidden; 
-            border: 2px solid transparent; /* Placeholder for expanded state */
+            border: 2px solid #000; /* ALWAYS BLACK BORDER */
             transition: all 0.2s ease;
+            text-align: center;
         }
         
-        /* Black Border for Expanded Cards */
+        /* EXPANDED PLAYER CARD */
         .player-card.expanded {
-            border: 2px solid #000;
+            grid-column: 1 / -1; /* Takes up full width */
         }
 
-        .card-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
-        .header-left { display: flex; flex-direction: column; align-items: flex-start; }
-        .header-name { font-size: 1.1rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
-        .header-score { font-size: 1.8rem; font-weight: bold; }
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .header-info { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.85rem; color: #7f8c8d; }
+        .card-header { 
+            padding: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            user-select: none;
+            min-height: 100px;
+        }
         
+        /* Expanded header switches back to row layout */
+        .player-card.expanded .card-header {
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 15px;
+            min-height: auto;
+        }
+
+        .header-left { display: flex; flex-direction: column; align-items: center; }
+        .player-card.expanded .header-left { align-items: flex-start; }
+
+        .header-name { font-size: 0.9rem; font-weight: bold; color: #2c3e50; margin-bottom: 2px; }
+        .player-card.expanded .header-name { font-size: 1.1rem; }
+
+        .header-score { font-size: 1.4rem; font-weight: bold; }
+        .player-card.expanded .header-score { font-size: 2.2rem; }
+
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .header-info { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; color: #7f8c8d; }
+        .player-card.expanded .header-info { align-items: flex-end; font-size: 0.85rem; }
+
+        .header-badge { display: inline-block; padding: 2px 6px; border-radius: 6px; font-weight: bold; color: white; margin-top: 4px; font-size: 0.7rem; }
+        .player-card.expanded .header-badge { font-size: 0.8rem; padding: 3px 8px; }
+
+        .collapse-icon { font-size: 0.8rem; color: #bdc3c7; }
+        .player-card.expanded .collapse-icon { transform: rotate(180deg); font-size: 1.2rem; }
+
         .card-body { padding: 15px; background-color: #fcfcfc; border-top: 1px solid #eee; }
         .points-input { width: calc(100% - 24px); padding: 12px; font-size: 1.1rem; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
         .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -163,22 +196,9 @@
         .btn-win { background-color: #27ae60; }
         .btn-lose { background-color: #e74c3c; }
         
-        .update-tally-section {
-            margin-top: 15px;
-            border-top: 1px dashed #ddd;
-            padding-top: 10px;
-        }
-        .update-tally-section h3 {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            color: #7f8c8d;
-            margin: 10px 0;
-            text-align: center;
-        }
-        .btn-row {
-            display: flex;
-            gap: 10px;
-        }
+        .update-tally-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; }
+        .update-tally-section h3 { font-size: 0.9rem; text-transform: uppercase; color: #7f8c8d; margin: 10px 0; text-align: center; }
+        .btn-row { display: flex; gap: 10px; }
 
         .btn-special { width: 100%; margin-top: 8px; padding: 12px; font-size: 1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
         .btn-half { background-color: #16a085; }
@@ -192,10 +212,13 @@
         .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; text-align: center; }
         .modal-content button { width: 100%; padding: 15px; background: #2980b9; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
 
-        .set-aside-tally {
-            font-size: 0.85rem;
-            margin-top: 4px;
-            font-weight: bold;
+        .set-aside-tally { font-size: 0.75rem; margin-top: 2px; font-weight: bold; }
+        .player-card.expanded .set-aside-tally { font-size: 0.85rem; margin-top: 4px; }
+
+        @media (max-width: 450px) {
+            .tally-value { font-size: 1.1rem; }
+            .header-score { font-size: 1.1rem; }
+            .header-name { font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -367,33 +390,31 @@
 
         function setLanguage(lang) { currentLang = lang; localStorage.setItem('mahjongLang', lang); render(); }
         
-        // --- NEW SCROLL & ACCORDION LOGIC ---
         function scrollToPlayer(idx) {
-            // 1. Close all others, open this one
-            players.forEach((p, i) => {
-                p.isExpanded = (i === idx);
-            });
+            // Toggles strictly between collapsed and this player
+            if (players[idx].isExpanded) {
+                players[idx].isExpanded = false;
+            } else {
+                players.forEach(p => p.isExpanded = false);
+                players[idx].isExpanded = true;
+            }
             saveData();
             render();
             
-            // 2. Smoothly scroll to that element
-            setTimeout(() => {
-                const element = document.getElementById(`player-card-${idx}`);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 50);
+            if (players[idx].isExpanded) {
+                setTimeout(() => {
+                    document.getElementById(`player-card-${idx}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 50);
+            }
         }
 
         function toggleCollapse(idx) {
             const targetState = !players[idx].isExpanded;
-            // Accordion Logic: Force all others closed
             players.forEach(p => p.isExpanded = false);
             players[idx].isExpanded = targetState;
             saveData();
             render();
         }
-        // -------------------------------------
 
         function hardReset() { if (confirm(i18n[currentLang].confirmWipe)) { localStorage.removeItem('mahjongData'); location.reload(); } }
 
@@ -417,7 +438,6 @@
                 globalNet += p.runningTally;
                 const tCls = p.runningTally > 0 ? 'positive' : (p.runningTally < 0 ? 'negative' : 'neutral');
                 
-                // Scoreboard items are now clickable links
                 talliesHtml += `
                     <div class="tally-item" onclick="scrollToPlayer(${i})">
                         <div class="tally-name">${p.name}</div>
@@ -426,8 +446,8 @@
 
                 const sCls = p.score > 0 ? 'positive' : (p.score < 0 ? 'negative' : 'neutral');
                 const setAsideCls = p.setAsidePoints > 0 ? 'positive' : (p.setAsidePoints < 0 ? 'negative' : '');
-                const setAsideText = p.setAsidePoints !== 0 ? `<div class="set-aside-tally ${setAsideCls}">${p.setAsidePoints > 0 ? t.badgeBanked : t.badgeDebt}${p.setAsidePoints}</div>` : '';
-                const streakLabel = p.streakCount > 0 ? `<span style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.streakCount} ${p.streakType === 'win' ? t.winStreak : t.lossStreak}</span>` : '';
+                const setAsideText = p.setAsidePoints !== 0 ? `<div class="set-aside-tally ${setAsideCls}">${p.setAsidePoints > 0 ? '+' : ''}${p.setAsidePoints}</div>` : '';
+                const streakLabel = p.streakCount > 0 ? `<span style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.streakCount}${p.streakType === 'win' ? 'W' : 'L'}</span>` : '';
 
                 const card = document.createElement('div');
                 card.id = `player-card-${i}`;
@@ -443,7 +463,7 @@
                                 ${streakLabel}
                                 ${setAsideText}
                             </div>
-                            <div class="collapse-icon" style="transform:rotate(${p.isExpanded ? 180 : 0}deg)">▼</div>
+                            <div class="collapse-icon">▼</div>
                         </div>
                     </div>
                     <div class="card-body" style="display:${p.isExpanded ? 'block' : 'none'}">

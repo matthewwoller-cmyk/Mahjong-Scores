@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taiwanese Mahjong Scoring Rules</title>
+    <title>Mahjong Scoring Rules</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #fdfbf7;
             color: #333;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -47,34 +47,46 @@
             color: white;
             font-weight: bold;
         }
+        .hand-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .chinese-name {
+            display: block;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            font-weight: normal;
+        }
         td.points {
             font-weight: bold;
             color: #27ae60;
             white-space: nowrap;
+            text-align: center;
         }
         tr:hover {
             background-color: #f9f9f9;
         }
-        .notes-section {
-            background-color: #e8f4f8;
+        .penalty-section {
+            background-color: #fdf2f2;
             padding: 15px;
             border-radius: 8px;
-            border-left: 5px solid #2980b9;
+            border-left: 5px solid #e74c3c;
             margin-bottom: 30px;
         }
-        .notes-section h3 {
+        .penalty-section h3 {
             margin-top: 0;
-            color: #2c3e50;
+            color: #c0392b;
         }
-        @media(max-width: 600px) {
+        @media(max-width: 768px) {
             table, thead, tbody, th, td, tr {
                 display: block;
             }
             th { display: none; }
             td {
                 position: relative;
-                padding-left: 50%;
+                padding-left: 45%;
                 border-bottom: none;
+                min-height: 1.5em;
             }
             td:last-child {
                 border-bottom: 1px solid #eee;
@@ -83,17 +95,16 @@
                 position: absolute;
                 top: 12px;
                 left: 15px;
-                width: 45%;
+                width: 40%;
                 white-space: nowrap;
                 font-weight: bold;
                 color: #7f8c8d;
             }
-            td:nth-of-type(1)::before { content: "Hand / Rule"; }
+            td:nth-of-type(1)::before { content: "Hand Name"; }
             td:nth-of-type(2)::before { content: "Points"; }
             td:nth-of-type(3)::before { content: "Description"; }
             
-            td.points { padding-left: 15px; text-align: left; margin-bottom: 5px; }
-            td.points::before { display: none; }
+            td.points { text-align: left; padding-left: 45%; }
         }
     </style>
 </head>
@@ -101,262 +112,363 @@
 
     <a href="index.html" class="nav-link">← Back to Score Tracker</a>
 
-    <h1>Taiwanese Mahjong Scoring</h1>
-
-    <div class="notes-section">
-        <h3>House Notes & Terminology</h3>
-        <ul>
-            <li><strong>PUNG:</strong> SAME (Three of a kind)</li>
-            <li><strong>CHOW:</strong> RUMMIE (A straight/sequence) - <em>BUT ONLY IF AFTER PHILLIP</em></li>
-        </ul>
-    </div>
+    <h1>Mahjong Scoring Sheet</h1>
 
     <table>
         <thead>
             <tr>
-                <th>Hand / Rule</th>
+                <th>Hand Name</th>
                 <th>Points</th>
                 <th>Description</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Dealership</td>
-                <td class="points">1, 3, 5, 7...</td>
-                <td>1 point for the dealership, plus 2 points for every time the dealership is retained.</td>
+                <td class="hand-name">Dealership<span class="chinese-name">莊家</span></td>
+                <td class="points">1+</td>
+                <td>Dealership, plus 2 points for each game dealership is held.</td>
             </tr>
             <tr>
-                <td>Self-drawn</td>
+                <td class="hand-name">Self-Drawn<span class="chinese-name">自摸</span></td>
                 <td class="points">1</td>
-                <td>1 point if the winning tile is self-drawn.</td>
+                <td>Winning tile is self-drawn.</td>
             </tr>
             <tr>
-                <td>No Winds or Dragons</td>
+                <td class="hand-name">No Winds or Dragons<span class="chinese-name">無字</span></td>
                 <td class="points">1</td>
-                <td>1 point for a winning hand that contains no winds or dragons.</td>
+                <td>Hand contains no winds or dragons.</td>
             </tr>
             <tr>
-                <td>No Flowers or Seasons</td>
+                <td class="hand-name">No Flowers or Seasons<span class="chinese-name">無花</span></td>
                 <td class="points">1</td>
-                <td>1 point for a winning hand that contains no flowers or seasons.</td>
+                <td>Hand contains no flowers or seasons.</td>
             </tr>
             <tr>
-                <td>No Winds, Dragons, Flowers, or Seasons</td>
+                <td class="hand-name">No Winds, Dragons, Flowers, or Seasons<span class="chinese-name">無字花</span></td>
                 <td class="points">5</td>
-                <td>5 points for a winning hand that contains no winds, dragons, flowers, or seasons.</td>
+                <td>Hand contains no winds, dragons, flowers, or seasons.</td>
             </tr>
             <tr>
-                <td>Two Five Eight</td>
+                <td class="hand-name">Two Five Eight<span class="chinese-name">將眼</span></td>
                 <td class="points">1</td>
-                <td>1 point for a winning hand where the pair is a pair of 2s, 5s, or 8s, of any suit.</td>
+                <td>Hand where the pair is 2s, 5s, or 8s.</td>
             </tr>
             <tr>
-                <td>Pair Wait</td>
+                <td class="hand-name">Pair Wait<span class="chinese-name">對碰</span></td>
                 <td class="points">2</td>
-                <td>2 points for a winning hand where the winning tile completes a pung from either of 2 pairs.</td>
+                <td>Hand where the winning tile completes a Pung from either of two pair.</td>
             </tr>
             <tr>
-                <td>Single Wait</td>
-                <td class="points">2</td>
-                <td>2 points for a winning hand where only 1 tile can be the winning tile.</td>
-            </tr>
-            <tr>
-                <td>Flower / Season Supplement</td>
+                <td class="hand-name">Single Wait<span class="chinese-name">假獨</span></td>
                 <td class="points">1</td>
-                <td>1 point if the winning tile is from a flower or season supplement.</td>
+                <td>Hand where only one tile can complete the winning meld or pair.</td>
             </tr>
             <tr>
-                <td>Last Tile</td>
-                <td class="points">10</td>
-                <td>10 points if the winning tile is the last tile of the wall.</td>
-            </tr>
-            <tr>
-                <td>Kong Supplement</td>
-                <td class="points">2 / 20 / 40</td>
-                <td>2 points if the winning tile is from a kong supplement. 20 points if the winning tile is from a supplement as a result of two consecutive kongs. 40 points if 3 or more consecutive kongs.</td>
-            </tr>
-            <tr>
-                <td>Robbing a Kong</td>
-                <td class="points">1</td>
-                <td>1 point if the winning tile is obtained by robbing a kong.</td>
-            </tr>
-            <tr>
-                <td>Ten Discards</td>
-                <td class="points">10</td>
-                <td>10 points for a winning hand achieved within the first 10 tiles in the discard pool (inclusive of the 10th discard).</td>
-            </tr>
-            <tr>
-                <td>Concealed Hand</td>
-                <td class="points">3 / 5</td>
-                <td>3 points for a winning hand that is completely concealed (i.e., no melds). Winning tile can be obtained from a discard. 5 points if the winning tile is self-drawn.</td>
-            </tr>
-            <tr>
-                <td>Flower or Season</td>
-                <td class="points">1 / 2</td>
-                <td>1 point for every flower or season. 1 extra point if it is the player's own position.</td>
-            </tr>
-            <tr>
-                <td>Eight Flowers and Season</td>
-                <td class="points">70</td>
-                <td>70 points if you collect all 8 flowers and seasons. This is a winning hand regardless of what is actually in your hand.</td>
-            </tr>
-            <tr>
-                <td>Four Flowers / Four Seasons</td>
-                <td class="points">7</td>
-                <td>7 points for a winning hand that contains all 4 flowers or all 4 seasons. Collect 10 chips from each player when you get the fourth flower or season. This is yours to keep whether you win the hand or not.</td>
-            </tr>
-            <tr>
-                <td>Pung or Kong of Wind</td>
-                <td class="points">1 / 2 / 3</td>
-                <td>1 point for every pung or kong of a wind, whether concealed or melded. 1 extra point if it is the player's own wind. 1 extra point if it is the round's wind.</td>
-            </tr>
-            <tr>
-                <td>Melded Kong</td>
-                <td class="points">1</td>
-                <td>1 point for each melded kong in a winning hand.</td>
-            </tr>
-            <tr>
-                <td>Pung or Kong of Dragon</td>
+                <td class="hand-name">Exclusive Single Wait<span class="chinese-name">獨獨</span></td>
                 <td class="points">2</td>
-                <td>2 points for every pung or kong of a dragon, whether concealed or melded.</td>
+                <td>Hand where only one tile can be the winning tile.</td>
             </tr>
             <tr>
-                <td>Concealed Kong</td>
+                <td class="hand-name">Flower or Season Supplement<span class="chinese-name">花上自摸</span></td>
+                <td class="points">1</td>
+                <td>Winning tile is from a flower or season supplement.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Kong Supplement<span class="chinese-name">槓上自摸</span></td>
                 <td class="points">2</td>
-                <td>2 points for each concealed kong in a winning hand. Collect 5 chips from each player when you make a concealed kong. This is yours to keep whether you win the hand or not. You must show your concealed kong at the end of the game. If you fail to do so or reveal a false kong, pay each player 10 chips.</td>
+                <td>Winning tile is from a Kong supplement.</td>
             </tr>
             <tr>
-                <td>Four of a Kind</td>
-                <td class="points">3 / 10</td>
-                <td>3 points for a winning hand that contains 4 of a kind that is not in a kong. 10 points for the 2nd 4-of-a-kind. 10 points if all 4 tiles are concealed.</td>
-            </tr>
-            <tr>
-                <td>No Terminals</td>
-                <td class="points">3</td>
-                <td>3 points for a winning hand that contains no terminals (1s and 9s).</td>
-            </tr>
-            <tr>
-                <td>Scattered Terminals</td>
-                <td class="points">5 / 15</td>
-                <td>5 points for a winning hand where all sets and the pair contain a terminal, a wind, or a dragon. 15 points if all sets and the pair contain a terminal (no winds/dragons).</td>
-            </tr>
-            <tr>
-                <td>All Chows</td>
-                <td class="points">3 / 10</td>
-                <td>3 points for a winning hand that contains 5 chows and a pair. 10 points if there are also no winds, dragons, flowers, or seasons.</td>
-            </tr>
-            <tr>
-                <td>All Pungs</td>
-                <td class="points">20 / 100</td>
-                <td>20 points for a winning hand that contains 5 pungs or kongs and a pair. 100 points if all concealed and self-drawn.</td>
-            </tr>
-            <tr>
-                <td>Two / Three / Four Concealed Pungs</td>
-                <td class="points">3 / 10 / 20</td>
-                <td>3 points for a winning hand that contains 2 concealed pungs. 10 points for 3 concealed pungs. 20 points for 4 concealed Pungs. All kongs (even melded) are also considered concealed pungs.</td>
-            </tr>
-            <tr>
-                <td>Five Concealed Pungs</td>
-                <td class="points">70</td>
-                <td>70 points for a winning hand that contains 5 concealed pungs. All kongs (even melded) are also considered "Concealed Hand".</td>
-            </tr>
-            <tr>
-                <td>Terminal Pungs</td>
-                <td class="points">40 / 100</td>
-                <td>40 points for a winning hand that contains 5 pungs and a pair, all of which are terminals (1s and 9s), winds, or dragons. 100 points if terminals only.</td>
-            </tr>
-            <tr>
-                <td>All Melds</td>
-                <td class="points">5 / 10</td>
-                <td>5 points for a winning hand where all sets are melded from discards. 10 points if the winning tile is also from a discard.</td>
-            </tr>
-            <tr>
-                <td>All Pairs</td>
-                <td class="points">30 / 45</td>
-                <td>30 points for a winning hand that contains 8 pairs and a tile matching 1 of the 8 pairs. 45 points if the hand can also be rearranged into a regular winning hand.</td>
-            </tr>
-            <tr>
-                <td>One Point</td>
-                <td class="points">15</td>
-                <td>15 points for a winning hand that is only worth 1 point. Dealership and self-drawn points are not counted for the purpose of "One Point" but are added to the 15 instead.</td>
-            </tr>
-            <tr>
-                <td>Two Suits</td>
-                <td class="points">3</td>
-                <td>3 points for a winning hand that contains only 2 of the regular suits (i.e., Bamboos, Dots, & Characters). No Winds or Dragons.</td>
-            </tr>
-            <tr>
-                <td>All Five Suits</td>
-                <td class="points">3</td>
-                <td>3 points for a winning hand that contains all 5 suits (i.e., Bamboos, Dots, Characters, Winds, & Dragons).</td>
-            </tr>
-            <tr>
-                <td>One Suit + Winds or Dragons</td>
+                <td class="hand-name">Double Kong Supplement<span class="chinese-name">槓上槓自摸</span></td>
                 <td class="points">20</td>
-                <td>20 points for a winning hand that contains only 1 suit plus winds and/or dragons.</td>
+                <td>Winning tile is from two consecutive Kong supplements.</td>
             </tr>
             <tr>
-                <td>One Suit</td>
-                <td class="points">70</td>
-                <td>70 points for a winning hand that contains only 1 suit.</td>
+                <td class="hand-name">Triple Kong Supplement<span class="chinese-name">槓三槓自摸</span></td>
+                <td class="points">60</td>
+                <td>Winning tile is from three consecutive Kong supplements.</td>
             </tr>
             <tr>
-                <td>Twins</td>
-                <td class="points">3 / 13</td>
-                <td>3 points for a winning hand that contains 2 identical chows. 13 points for 2 sets of twins.</td>
+                <td class="hand-name">Rob Kong<span class="chinese-name">搶槓</span></td>
+                <td class="points">1</td>
+                <td>Winning tile is obtained by robbing an opponent's Kong.</td>
             </tr>
             <tr>
-                <td>Triplets</td>
-                <td class="points">15</td>
-                <td>15 points for a winning hand that contains 3 identical chows.</td>
-            </tr>
-            <tr>
-                <td>Triplets and Twins</td>
-                <td class="points">23</td>
-                <td>23 points for a winning hand that contains a set of twins and a set of triplets.</td>
-            </tr>
-            <tr>
-                <td>Three Cousins</td>
+                <td class="hand-name">Ten Discards<span class="chinese-name">十只内</span></td>
                 <td class="points">10</td>
-                <td>10 points for a winning hand that contains 3 chows or 3 pungs of each suit with the same numerical values (e.g., 345 of characters, 345 of bamboos, and 345 of dots).</td>
+                <td>Winning tile is one of the first ten tiles in the discard pool.</td>
             </tr>
             <tr>
-                <td>Little Three Dragons</td>
-                <td class="points">25</td>
-                <td>25 points for a winning hand that contains pungs of 2 dragons and a pair of the 3rd dragon.</td>
+                <td class="hand-name">Five Discards<span class="chinese-name">五只内</span></td>
+                <td class="points">20</td>
+                <td>Winning tile is one of the first five tiles in the discard pool.</td>
             </tr>
             <tr>
-                <td>Big Three Dragons</td>
-                <td class="points">50</td>
-                <td>50 points for a winning hand that contains pungs of all 3 dragons.</td>
+                <td class="hand-name">Last Tile<span class="chinese-name">海底撈月</span></td>
+                <td class="points">10</td>
+                <td>Winning tile is the final tile of the draw wall.</td>
             </tr>
             <tr>
-                <td>Little Four Winds</td>
-                <td class="points">50</td>
-                <td>50 points for a winning hand that contains pungs of 3 winds and a pair of the 4th wind. (Own/Round Wind points extra)</td>
+                <td class="hand-name">Concealed Hand<span class="chinese-name">門清</span></td>
+                <td class="points">3</td>
+                <td>Hand is completely concealed (no melds except Kongs).</td>
             </tr>
             <tr>
-                <td>Big Four Winds</td>
+                <td class="hand-name">Concealed Self-Drawn<span class="chinese-name">門清自摸</span></td>
+                <td class="points">5</td>
+                <td>Hand is completely concealed and the winning tile is self-drawn.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Flower or Season<span class="chinese-name">花牌</span></td>
+                <td class="points">1 / 2</td>
+                <td>Each flower or season, plus 1 point for matching the player's position.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Four Flowers or Four Seasons<span class="chinese-name">一台花</span></td>
+                <td class="points">7</td>
+                <td>Hand contains all four flowers or all four seasons. Immediately collect 10 points from each opponent.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Eight Flowers and Seasons<span class="chinese-name">花胡</span></td>
                 <td class="points">70</td>
-                <td>70 points for a winning hand that contains pungs of all 4 winds. (No extra points for Own/Round Wind)</td>
+                <td>Hand contains all eight flowers and seasons. Automatic win.</td>
             </tr>
             <tr>
-                <td>Open Straight / Closed Straight</td>
-                <td class="points">5 / 10</td>
-                <td>5 points for a winning hand that contains three chows from 1 to 9 (123, 456, 789) of the same suit. 10 points if all three chows are concealed.</td>
+                <td class="hand-name">Pung of Wind<span class="chinese-name">碰風</span></td>
+                <td class="points">1 / 2 / 3</td>
+                <td>Base 1 pt, plus 1 for matching round wind, plus 1 for matching player position.</td>
             </tr>
             <tr>
-                <td>Thirteen Wonders</td>
+                <td class="hand-name">Pung of Dragon<span class="chinese-name">碰龍</span></td>
+                <td class="points">2</td>
+                <td>Each Pung or Kong of a dragon, concealed or melded.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Melded Kong<span class="chinese-name">明槓</span></td>
+                <td class="points">1</td>
+                <td>Each melded Kong.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Concealed Kong<span class="chinese-name">暗槓</span></td>
+                <td class="points">2</td>
+                <td>Each concealed Kong.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Four of a Kind<span class="chinese-name">四歸</span></td>
+                <td class="points">3</td>
+                <td>Hand contains all four of a tile that are not a Kong.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Second Four of a Kind<span class="chinese-name">兩個四歸</span></td>
+                <td class="points">10</td>
+                <td>Hand contains a second set of four tiles that are not a Kong.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Concealed Four of a Kind<span class="chinese-name">內藏四歸</span></td>
+                <td class="points">10</td>
+                <td>Hand conceals all four of a tile that are not a Kong.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">No Terminals<span class="chinese-name">斷么</span></td>
+                <td class="points">3</td>
+                <td>Hand contains no terminals (1s and 9s).</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Mixed Scattered Terminals<span class="chinese-name">花么</span></td>
+                <td class="points">15</td>
+                <td>All sets contain a terminal, winds and dragons allowed.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Pure Scattered Terminals<span class="chinese-name">清么</span></td>
+                <td class="points">30</td>
+                <td>All sets contain a terminal, with no winds or dragons.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">All Chows<span class="chinese-name">平胡</span></td>
+                <td class="points">3</td>
+                <td>Hand contains five Chows and a pair.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Pure All Chows<span class="chinese-name">大平胡</span></td>
+                <td class="points">10</td>
+                <td>Five Chows and a pair with no winds, dragons, flowers, or seasons.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">All Pungs<span class="chinese-name">對對胡</span></td>
+                <td class="points">20</td>
+                <td>Hand contains five Pungs or Kongs and a pair.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Concealed All Pungs<span class="chinese-name">間間胡</span></td>
                 <td class="points">100</td>
-                <td>100 points for a winning hand that contains the terminals (1 and 9) of each suit, each wind, each dragon, one additional tile of the 13, and one set.</td>
+                <td>Concealed hand contains five Pungs and a pair, no Kongs, self-drawn.</td>
             </tr>
             <tr>
-                <td>Earthly Hand / Heavenly Hand</td>
+                <td class="hand-name">Two Concealed Pungs<span class="chinese-name">兩暗刻</span></td>
+                <td class="points">3</td>
+                <td>Hand contains two concealed Pungs (Kongs count as concealed).</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Three Concealed Pungs<span class="chinese-name">三暗刻</span></td>
+                <td class="points">10</td>
+                <td>Hand contains three concealed Pungs.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Four Concealed Pungs<span class="chinese-name">四暗刻</span></td>
+                <td class="points">20</td>
+                <td>Hand contains four concealed Pungs.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Five Concealed Pungs<span class="chinese-name">五暗刻</span></td>
+                <td class="points">70</td>
+                <td>Hand contains five concealed Pungs.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Mixed Terminal Pungs<span class="chinese-name">花么對對胡</span></td>
+                <td class="points">40</td>
+                <td>Five Pungs and a pair, all are terminals, winds, or dragons.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Pure Terminal Pungs<span class="chinese-name">清么對對胡</span></td>
                 <td class="points">100</td>
-                <td>100 points if the winning hand is the original 17 tiles (for the dealer) or if the winning tile is the dealer's first discard (for non-dealers).</td>
+                <td>Five Pungs and a pair, all are terminals (no winds/dragons).</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Half All Melds<span class="chinese-name">半求人</span></td>
+                <td class="points">5</td>
+                <td>All sets melded from discards except the winning tile.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Full All Melds<span class="chinese-name">全求人</span></td>
+                <td class="points">10</td>
+                <td>All sets melded from discards including the winning tile.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">All Pairs<span class="chinese-name">八對半</span></td>
+                <td class="points">30</td>
+                <td>Hand contains eight pairs and one tile matching one of the pairs.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">All Pairs Two Ways<span class="chinese-name">八對半兩食</span></td>
+                <td class="points">50</td>
+                <td>Eight pairs and can be rearranged into a normal winning hand.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">One Point<span class="chinese-name">雞胡</span></td>
+                <td class="points">15</td>
+                <td>Hand is only worth one point by normal count (excludes dealership).</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Two Suits<span class="chinese-name">缺一門</span></td>
+                <td class="points">3</td>
+                <td>Hand contains only two of the regular suits, no winds or dragons.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Five Suits<span class="chinese-name">五門齊</span></td>
+                <td class="points">3</td>
+                <td>Hand contains all five suits (Bamboo, Dot, Character, Wind, Dragon).</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Mixed One Suit<span class="chinese-name">混一色</span></td>
+                <td class="points">20</td>
+                <td>Hand contains only one regular suit with winds and/or dragons.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Pure One Suit<span class="chinese-name">清一色</span></td>
+                <td class="points">70</td>
+                <td>Hand contains only one of the regular suits.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Twins<span class="chinese-name">一般高</span></td>
+                <td class="points">3</td>
+                <td>Hand contains two identical Chows.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Two Sets of Twins<span class="chinese-name">第二個般高</span></td>
+                <td class="points">13</td>
+                <td>Hand contains two sets of identical Chows.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Triplets<span class="chinese-name">三般高</span></td>
+                <td class="points">15</td>
+                <td>Hand contains three identical Chows.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Twins and Triplets<span class="chinese-name">般高+三般高</span></td>
+                <td class="points">23</td>
+                <td>Hand contains one set of twins and one set of triplets.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Three Cousins<span class="chinese-name">三相逢</span></td>
+                <td class="points">10</td>
+                <td>Hand contains three Chows or Pungs of each suit with same values.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Small Three Dragons<span class="chinese-name">小三元</span></td>
+                <td class="points">25</td>
+                <td>Pungs of two dragons and a pair of the third dragon.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Big Three Dragons<span class="chinese-name">大三元</span></td>
+                <td class="points">50</td>
+                <td>Hand contains Pungs of all three dragons.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Small Four Winds<span class="chinese-name">小四喜</span></td>
+                <td class="points">50</td>
+                <td>Pungs of three winds and a pair of the fourth wind.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Big Four Winds<span class="chinese-name">大四喜</span></td>
+                <td class="points">100</td>
+                <td>Hand contains Pungs of all four winds.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Straight<span class="chinese-name">明龍</span></td>
+                <td class="points">8</td>
+                <td>Hand contains three Chows from one to nine of the same suit.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Mixed Straight<span class="chinese-name">明雜龍</span></td>
+                <td class="points">5</td>
+                <td>Hand contains three Chows from one to nine of different suits.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Concealed Straight<span class="chinese-name">暗龍</span></td>
+                <td class="points">15</td>
+                <td>Hand contains three concealed Chows from one to nine of the same suit.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Concealed Mix Straight<span class="chinese-name">暗雜龍</span></td>
+                <td class="points">10</td>
+                <td>Three concealed Chows from one to nine of different suits.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Thirteen Wonders<span class="chinese-name">十三么</span></td>
+                <td class="points">100</td>
+                <td>Terminals of each suit, each wind, each dragon, plus one extra and a set.</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Earthly Hand<span class="chinese-name">地胡</span></td>
+                <td class="points">100</td>
+                <td>Winning tile is the dealer's discard (Non-Dealer Only).</td>
+            </tr>
+            <tr>
+                <td class="hand-name">Heavenly Hand<span class="chinese-name">天胡</span></td>
+                <td class="points">100</td>
+                <td>Hand is the dealer's originally drawn tiles (Dealer Only).</td>
             </tr>
         </tbody>
     </table>
+
+    <div class="penalty-section">
+        <h3>Violations & Special Tally</h3>
+        <ul>
+            <li><strong>False Pung/Chow:</strong> Pay 2 points to each opponent.</li>
+            <li><strong>False Win (詐胡):</strong> Pay 50 points to each opponent. End of game; dealership holds.</li>
+            <li><strong>Mixed Set of Flowers & Seasons (一台草):</strong> Collect 5 points from each opponent immediately.</li>
+        </ul>
+    </div>
 
 </body>
 </html>

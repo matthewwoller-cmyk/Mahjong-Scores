@@ -34,16 +34,17 @@
         }
         .btn-hard-reset:active { opacity: 0.8; }
 
-        /* Language Toggle - Top Right */
+        /* FIXED: Language Toggle - Top Right (Added higher z-index and forced visibility) */
         .lang-toggle {
             position: absolute;
             top: 20px;
             right: 20px;
             display: flex;
-            background: #e0e0e0;
+            background: #dcdcdc; /* Slightly darker for better contrast */
             border-radius: 20px;
             overflow: hidden;
-            z-index: 10;
+            z-index: 1000; /* Ensure it stays above all other elements */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .lang-toggle button {
             background: transparent;
@@ -51,7 +52,7 @@
             padding: 8px 15px;
             font-size: 0.9rem;
             cursor: pointer;
-            color: #7f8c8d;
+            color: #444; /* Darker text for inactive state */
             font-weight: bold;
             transition: 0.3s;
             border-radius: 20px;
@@ -102,19 +103,11 @@
             display: flex; flex-direction: column; align-items: center; text-align: center;
         }
         .combined-net-label { font-size: 1rem; color: #bdc3c7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .combined-net-value { font-size: 3.5rem; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #34495e; padding-bottom: 20px; width: 100%; }
+        .combined-net-value { font-size: 3.5rem; font-weight: bold; margin-bottom: 5px; width: 100%; }
         
+        /* Strict Color Rules */
         .positive { color: #27ae60 !important; }
         .negative { color: #e74c3c !important; }
-        .neutral { color: #34495e; }
-
-        .tally-row { display: flex; justify-content: space-around; width: 100%; }
-        .tally-item { 
-            flex: 1; padding: 10px 5px; cursor: pointer; border-radius: 8px; transition: background 0.2s;
-        }
-        .tally-item:hover { background: rgba(255, 255, 255, 0.1); }
-        .tally-name { font-size: 0.85rem; color: #bdc3c7; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tally-value { font-size: 1.4rem; font-weight: bold; }
 
         .manual-adjust {
             background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -128,65 +121,62 @@
         .btn-sub { background-color: #e74c3c; }
 
         /* DASHBOARD GRID BOARD */
-        .board { 
+        .dashboard-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            gap: 12px; 
-            align-items: start;
+            gap: 10px; 
+            margin-bottom: 15px;
         }
         
-        .player-card { 
+        .mini-card { 
             background: #fff; 
             border-radius: 12px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
-            overflow: hidden; 
-            border: 2.5px solid #000; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #000; /* PERMANENT BLACK BORDER */
+            padding: 10px;
             text-align: center;
-        }
-        
-        .player-card.expanded {
-            grid-column: span 3; 
-        }
-
-        .card-header { 
-            padding: 10px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            cursor: pointer; 
-            user-select: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             min-height: 110px;
+            transition: all 0.2s;
         }
         
-        .player-card.expanded .card-header {
-            flex-direction: row;
-            justify-content: space-between;
-            padding: 20px;
-            min-height: auto;
+        .mini-card.active {
+            background-color: #f0f0f0;
+            border-width: 3.5px;
         }
 
-        .header-left { display: flex; flex-direction: column; align-items: center; }
-        .player-card.expanded .header-left { align-items: flex-start; }
+        .mini-name { font-size: 0.85rem; font-weight: bold; color: #2c3e50; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .mini-tally-label { font-size: 0.65rem; color: #7f8c8d; text-transform: uppercase; }
+        .mini-tally-value { font-size: 1rem; font-weight: bold; margin-bottom: 5px; }
+        .mini-score-value { font-size: 1.3rem; font-weight: bold; }
+        .mini-streak-info { font-size: 0.75rem; font-weight: bold; margin-top: 2px; }
 
-        .header-name { font-size: 0.9rem; font-weight: bold; color: #2c3e50; margin-bottom: 2px; }
-        .player-card.expanded .header-name { font-size: 1.3rem; }
+        /* WORKSPACE PANEL BELOW */
+        .interaction-panel {
+            background: #fff;
+            border: 2.5px solid #000;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 10px;
+            display: none; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .panel-title { font-size: 1.3rem; font-weight: bold; color: #2c3e50; }
+        .panel-streak-detail { font-size: 0.9rem; color: #7f8c8d; text-align: center; margin-bottom: 15px; }
 
-        .header-score { font-size: 1.4rem; font-weight: bold; }
-        .player-card.expanded .header-score { font-size: 2.5rem; }
-
-        .header-right { display: flex; align-items: center; gap: 10px; }
-        .header-info { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; color: #7f8c8d; }
-        .player-card.expanded .header-info { align-items: flex-end; font-size: 0.9rem; }
-
-        .header-badge { display: inline-block; padding: 2px 6px; border-radius: 6px; font-weight: bold; color: white; margin-top: 4px; font-size: 0.7rem; }
-        .player-card.expanded .header-badge { font-size: 0.85rem; padding: 4px 10px; }
-
-        .collapse-icon { font-size: 0.8rem; color: #bdc3c7; transition: transform 0.3s; }
-        .player-card.expanded .collapse-icon { transform: rotate(180deg); font-size: 1.2rem; }
-
-        .card-body { padding: 20px; background-color: #fcfcfc; border-top: 1.5px solid #eee; }
         .points-input { width: calc(100% - 24px); padding: 12px; font-size: 1.1rem; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
         .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
         .action-buttons button { flex: 1; padding: 15px; font-size: 1.1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
@@ -209,12 +199,10 @@
         .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; text-align: center; }
         .modal-content button { width: 100%; padding: 15px; background: #2980b9; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
 
-        .set-aside-tally { font-size: 0.75rem; margin-top: 2px; font-weight: bold; }
-        .player-card.expanded .set-aside-tally { font-size: 0.9rem; margin-top: 4px; }
-
         @media (max-width: 500px) {
-            .mini-score { font-size: 1.1rem; }
+            .mini-score-value { font-size: 1.1rem; }
             .mini-name { font-size: 0.75rem; }
+            .mini-tally-value { font-size: 0.85rem; }
             .mini-card { min-height: 120px; }
         }
     </style>
@@ -243,7 +231,9 @@
     <div class="rules-link"><a href="rules.html" id="ui-rules" target="_blank" rel="noopener noreferrer">View Scoring Rules</a></div>
 
     <div class="top-controls"><button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button></div>
+    
     <div class="master-scoreboard" id="master-scoreboard"></div>
+
     <div class="manual-adjust" id="manual-adjust-container"></div>
     
     <div class="dashboard-grid" id="dashboard-grid"></div>
@@ -256,7 +246,7 @@
                 title: "Mahjong Score Tracker", subtitle: "Base 5 points auto-applied.", rulesLink: "View Scoring Rules",
                 netScore: "Combined Table Net Score", noStreak: "No active streak", winStreak: "Win Streak", lossStreak: "Loss Streak",
                 multiplier: "1.5x Active", handPoints: "Hand points", winBtn: "Win (+)", loseBtn: "Lose (-)",
-                revengeBtn: "Revenge", tallyBtn: "Pay/Collect",
+                revengeBtn: "Revenge", tallyBtn: "Pay/Collect", totalBanked: "Total Banked",
                 bankNeed3: "Bank / Surrender (Need 3 Streak)", bankWinnings: "Bank Winnings & Reset",
                 surrenderDebt: "Surrender & Set Aside Debt", undoBtn: "⟲ Undo Last Action", 
                 resetBtn: "Start New Game (reset)", badgeDebt: "Set Aside: ", badgeBanked: "Set Aside: +", 
@@ -270,7 +260,7 @@
                 title: "麻雀計分器", subtitle: "自動加上5分底分。", rulesLink: "查看計分規則",
                 netScore: "全檯總結算", noStreak: "沒有連勝/連敗", winStreak: "連勝", lossStreak: "連敗",
                 multiplier: "1.5倍生效", handPoints: "番數 / 分數", winBtn: "贏 (+)", loseBtn: "輸 (-)",
-                revengeBtn: "報仇", tallyBtn: "收/付", 
+                revengeBtn: "報仇", tallyBtn: "收/付", totalBanked: "總額",
                 bankNeed3: "儲起 / 投降 (需連中3次)", bankWinnings: "儲起贏分並重置",
                 surrenderDebt: "投降並記下欠債", undoBtn: "⟲ 復原上一步", 
                 resetBtn: "開始新遊戲 (重置)", badgeDebt: "已記下: ", badgeBanked: "已儲起: +", 
@@ -387,19 +377,19 @@
             input.value = ''; saveData(); render();
         }
 
-        function setLanguage(lang) { currentLang = lang; localStorage.setItem('mahjongLang', lang); render(); }
+        function setLanguage(lang) { 
+            currentLang = lang; 
+            localStorage.setItem('mahjongLang', lang); 
+            render(); 
+        }
         
         function togglePlayerPanel(idx) {
-            if (expandedPlayerIndex === idx) {
-                expandedPlayerIndex = null;
-            } else {
-                expandedPlayerIndex = idx;
-            }
+            expandedPlayerIndex = (expandedPlayerIndex === idx) ? null : idx;
             render();
             if (expandedPlayerIndex !== null) {
                 setTimeout(() => {
                     document.getElementById('interaction-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 50);
+                }, 100);
             }
         }
 
@@ -412,9 +402,13 @@
             document.getElementById('ui-rules').innerText = t.rulesLink;
             document.getElementById('btn-undo').innerText = t.undoBtn;
             document.getElementById('btn-undo').disabled = historyStack.length === 0;
+            document.getElementById('btn-hard-reset').innerText = t.resetBtn;
+
+            // Updated language button visibility logic
+            document.getElementById('lang-en').className = (currentLang === 'en') ? 'active' : '';
+            document.getElementById('lang-zh').className = (currentLang === 'zh') ? 'active' : '';
 
             let globalNet = tableOffset;
-            let talliesHtml = '<div class="tally-row">';
             const dashboard = document.getElementById('dashboard-grid');
             const panel = document.getElementById('interaction-panel');
             dashboard.innerHTML = '';
@@ -422,25 +416,19 @@
 
             players.forEach((p, i) => {
                 globalNet += p.runningTally;
-                const tCls = p.runningTally > 0 ? 'positive' : (p.runningTally < 0 ? 'negative' : 'neutral');
-                
-                talliesHtml += `
-                    <div class="tally-item" onclick="togglePlayerPanel(${i})">
-                        <div class="tally-name">${p.name}</div>
-                        <div class="tally-value ${tCls}">${p.runningTally > 0 ? '+' : ''}${p.runningTally}</div>
-                    </div>`;
-
-                const sCls = p.score > 0 ? 'positive' : (p.score < 0 ? 'negative' : 'neutral');
-                const setAsideCls = p.setAsidePoints > 0 ? 'positive' : (p.setAsidePoints < 0 ? 'negative' : '');
-                const setAsideText = p.setAsidePoints !== 0 ? `<div class="mini-tally ${setAsideCls}">${p.setAsidePoints > 0 ? '+' : ''}${p.setAsidePoints}</div>` : '';
-                const streakLabel = p.streakCount > 0 ? `<div class="mini-streak" style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'}">${p.streakCount}${p.streakType === 'win' ? 'W' : 'L'}</div>` : '';
+                const tCls = p.runningTally > 0 ? 'positive' : (p.runningTally < 0 ? 'negative' : '');
+                const sCls = p.score > 0 ? 'positive' : (p.score < 0 ? 'negative' : '');
+                const streakLabel = p.streakCount > 0 ? `<div class="mini-streak-info" style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'}">${p.streakCount}${p.streakType === 'win' ? 'W' : 'L'}</div>` : '';
+                const setAsideText = p.setAsidePoints !== 0 ? `<div class="mini-streak-info ${p.setAsidePoints > 0 ? 'positive' : 'negative'}">${p.setAsidePoints > 0 ? '+' : ''}${p.setAsidePoints}</div>` : '';
 
                 const miniCard = document.createElement('div');
                 miniCard.className = `mini-card ${expandedPlayerIndex === i ? 'active' : ''}`;
                 miniCard.onclick = () => togglePlayerPanel(i);
                 miniCard.innerHTML = `
                     <div class="mini-name">${p.name}</div>
-                    <div class="mini-score ${sCls}">${p.score > 0 ? '+' : ''}${p.score}</div>
+                    <div class="mini-tally-label">${t.totalBanked}</div>
+                    <div class="mini-tally-value ${tCls}">${p.runningTally > 0 ? '+' : ''}${p.runningTally}</div>
+                    <div class="mini-score-value ${sCls}">${p.score > 0 ? '+' : ''}${p.score}</div>
                     ${streakLabel}
                     ${setAsideText}
                 `;
@@ -450,19 +438,15 @@
                     panel.innerHTML = `
                         <div class="panel-header">
                             <div class="panel-title">${p.name}</div>
-                            <div class="header-score ${sCls}" style="font-size:1.8rem; font-weight:bold;">${p.score > 0 ? '+' : ''}${p.score}</div>
+                            <div class="header-score ${sCls}" style="font-size:2rem; font-weight:bold;">${p.score > 0 ? '+' : ''}${p.score}</div>
                         </div>
                         <div class="panel-streak-detail">${p.streakCount > 0 ? p.streakCount + ' ' + (p.streakType === 'win' ? t.winStreak : t.lossStreak) + ' (' + t.multiplier + ')' : t.noStreak}</div>
-                        
                         <input type="number" id="points-${i}" class="points-input" placeholder="${t.handPoints}">
-                        
                         <div class="action-buttons">
                             <button class="btn-win" onclick="recordHand(${i},'win')">${t.winBtn}</button>
                             <button class="btn-lose" onclick="recordHand(${i},'lose')">${t.loseBtn}</button>
                         </div>
-                        
                         <button class="btn-special ${p.streakType === 'win' ? 'btn-bank' : 'btn-surrender'}" onclick="bankOrSurrender(${i})" ${p.streakCount >= 3 ? '' : 'disabled'}>${p.streakType === 'win' ? t.bankWinnings : t.surrenderDebt}</button>
-                        
                         <div class="update-tally-section">
                             <h3>${t.updateTallyHeader}</h3>
                             <div class="btn-row">
@@ -474,8 +458,21 @@
                 }
             });
 
-            document.getElementById('master-scoreboard').innerHTML = `<div class="combined-net-label">${t.netScore}</div><div class="combined-net-value ${globalNet > 0 ? 'positive' : (globalNet < 0 ? 'negative' : 'neutral')}">${globalNet > 0 ? '+' : ''}${globalNet}</div>${talliesHtml}</div>`;
-            document.getElementById('manual-adjust-container').innerHTML = `<div class="manual-adjust-label">${t.targetTable}:</div><input type="number" id="adjust-amount" placeholder="${t.adjustPlaceholder}"><div class="manual-adjust-btns"><button class="btn-add" onclick="applyManualAdjustment(true)">+</button><button class="btn-sub" onclick="applyManualAdjustment(false)">-</button></div>`;
+            document.getElementById('master-scoreboard').innerHTML = `
+                <div class="combined-net-label">${t.netScore}</div>
+                <div class="combined-net-value ${globalNet > 0 ? 'positive' : (globalNet < 0 ? 'negative' : '')}">
+                    ${globalNet > 0 ? '+' : ''}${globalNet}
+                </div>
+            `;
+            
+            document.getElementById('manual-adjust-container').innerHTML = `
+                <div class="manual-adjust-label">${t.targetTable}:</div>
+                <input type="number" id="adjust-amount" placeholder="${t.adjustPlaceholder}">
+                <div class="manual-adjust-btns">
+                    <button class="btn-add" onclick="applyManualAdjustment(true)">+</button>
+                    <button class="btn-sub" onclick="applyManualAdjustment(false)">-</button>
+                </div>
+            `;
         }
 
         loadData();

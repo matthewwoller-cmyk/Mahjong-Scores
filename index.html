@@ -116,7 +116,6 @@
         .tally-name { font-size: 0.85rem; color: #bdc3c7; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .tally-value { font-size: 1.4rem; font-weight: bold; }
 
-        /* Manual Adjust Section */
         .manual-adjust {
             background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;
@@ -141,14 +140,13 @@
             border-radius: 12px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
             overflow: hidden; 
-            border: 2.5px solid #000; /* PERMANENT BLACK BORDER */
+            border: 2.5px solid #000; 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
         }
         
-        /* EXPANDED PLAYER CARD logic */
         .player-card.expanded {
-            grid-column: span 3; /* Expands to full width of the row */
+            grid-column: span 3; 
         }
 
         .card-header { 
@@ -162,7 +160,6 @@
             min-height: 110px;
         }
         
-        /* Layout change for expanded header */
         .player-card.expanded .card-header {
             flex-direction: row;
             justify-content: space-between;
@@ -201,9 +198,9 @@
         .btn-row { display: flex; gap: 10px; }
 
         .btn-special { width: 100%; margin-top: 8px; padding: 12px; font-size: 1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .btn-half { background-color: #16a085; }
         .btn-surrender { background-color: #f39c12; }
         .btn-bank { background-color: #8e44ad; }
+        .btn-half { background-color: #16a085; }
         .btn-tally-local { background-color: #2980b9; }
         .btn-special:disabled { background-color: #bdc3c7; cursor: not-allowed; color: #7f8c8d; }
 
@@ -216,10 +213,9 @@
         .player-card.expanded .set-aside-tally { font-size: 0.9rem; margin-top: 4px; }
 
         @media (max-width: 500px) {
-            .tally-value { font-size: 1rem; }
-            .header-score { font-size: 1.1rem; }
-            .header-name { font-size: 0.75rem; }
-            .card-header { min-height: 120px; }
+            .mini-score { font-size: 1.1rem; }
+            .mini-name { font-size: 0.75rem; }
+            .mini-card { min-height: 120px; }
         }
     </style>
 </head>
@@ -244,17 +240,20 @@
 
     <h1 id="ui-title">Mahjong Score Tracker</h1>
     <div class="subtitle" id="ui-subtitle">Base 5 points auto-applied.</div>
-    <div class="rules-link"><a href="rules.html" id="ui-rules">📖 View Taiwanese Scoring Rules</a></div>
+    <div class="rules-link"><a href="rules.html" id="ui-rules" target="_blank" rel="noopener noreferrer">View Scoring Rules</a></div>
 
     <div class="top-controls"><button class="btn-undo" id="btn-undo" onclick="undoLastAction()" disabled>⟲ Undo Last Action</button></div>
     <div class="master-scoreboard" id="master-scoreboard"></div>
     <div class="manual-adjust" id="manual-adjust-container"></div>
-    <div class="board" id="board"></div>
+    
+    <div class="dashboard-grid" id="dashboard-grid"></div>
+
+    <div class="interaction-panel" id="interaction-panel"></div>
 
     <script>
         const i18n = {
             en: {
-                title: "Mahjong Score Tracker", subtitle: "Base 5 points auto-applied.", rulesLink: "📖 View Taiwanese Scoring Rules",
+                title: "Mahjong Score Tracker", subtitle: "Base 5 points auto-applied.", rulesLink: "View Scoring Rules",
                 netScore: "Combined Table Net Score", noStreak: "No active streak", winStreak: "Win Streak", lossStreak: "Loss Streak",
                 multiplier: "1.5x Active", handPoints: "Hand points", winBtn: "Win (+)", loseBtn: "Lose (-)",
                 revengeBtn: "Revenge", tallyBtn: "Pay/Collect",
@@ -268,7 +267,7 @@
                 confirmWipe: "WARNING: Start a new game and wipe everything?"
             },
             zh: {
-                title: "麻雀計分器", subtitle: "自動加上5分底分。", rulesLink: "📖 查看台灣麻雀計分規則",
+                title: "麻雀計分器", subtitle: "自動加上5分底分。", rulesLink: "查看計分規則",
                 netScore: "全檯總結算", noStreak: "沒有連勝/連敗", winStreak: "連勝", lossStreak: "連敗",
                 multiplier: "1.5倍生效", handPoints: "番數 / 分數", winBtn: "贏 (+)", loseBtn: "輸 (-)",
                 revengeBtn: "報仇", tallyBtn: "收/付", 
@@ -284,14 +283,15 @@
 
         let currentLang = localStorage.getItem('mahjongLang') || 'en';
         const defaultPlayers = [
-            { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
-            { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false },
-            { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0, isExpanded: false }
+            { id: 0, name: "Player 1", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
+            { id: 1, name: "Player 2", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 },
+            { id: 2, name: "Player 3", score: 0, streakType: null, streakCount: 0, setAsidePoints: 0, runningTally: 0 }
         ];
 
         let players = JSON.parse(JSON.stringify(defaultPlayers));
         let tableOffset = 0;
         let historyStack = [];
+        let expandedPlayerIndex = null;
 
         function loadData() {
             const data = JSON.parse(localStorage.getItem('mahjongData'));
@@ -299,8 +299,6 @@
                 players = data.players || defaultPlayers;
                 tableOffset = data.tableOffset || 0;
             } else {
-                players = JSON.parse(JSON.stringify(defaultPlayers));
-                tableOffset = 0;
                 showNameModal();
             }
         }
@@ -391,20 +389,17 @@
 
         function setLanguage(lang) { currentLang = lang; localStorage.setItem('mahjongLang', lang); render(); }
         
-        function toggleCollapse(idx) {
-            const isCurrentlyExpanded = players[idx].isExpanded;
-            // ACCORDION LOGIC: Close everyone
-            players.forEach(p => p.isExpanded = false);
-            // Toggle the specific one based on its previous state
-            players[idx].isExpanded = !isCurrentlyExpanded;
-            
-            saveData();
+        function togglePlayerPanel(idx) {
+            if (expandedPlayerIndex === idx) {
+                expandedPlayerIndex = null;
+            } else {
+                expandedPlayerIndex = idx;
+            }
             render();
-            
-            if (players[idx].isExpanded) {
+            if (expandedPlayerIndex !== null) {
                 setTimeout(() => {
-                    document.getElementById(`player-card-${idx}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
+                    document.getElementById('interaction-panel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 50);
             }
         }
 
@@ -417,55 +412,57 @@
             document.getElementById('ui-rules').innerText = t.rulesLink;
             document.getElementById('btn-undo').innerText = t.undoBtn;
             document.getElementById('btn-undo').disabled = historyStack.length === 0;
-            document.getElementById('btn-hard-reset').innerText = t.resetBtn;
-            document.getElementById('lang-en').className = currentLang === 'en' ? 'active' : '';
-            document.getElementById('lang-zh').className = currentLang === 'zh' ? 'active' : '';
 
             let globalNet = tableOffset;
             let talliesHtml = '<div class="tally-row">';
-            const board = document.getElementById('board');
-            board.innerHTML = '';
+            const dashboard = document.getElementById('dashboard-grid');
+            const panel = document.getElementById('interaction-panel');
+            dashboard.innerHTML = '';
+            panel.style.display = expandedPlayerIndex === null ? 'none' : 'block';
 
             players.forEach((p, i) => {
                 globalNet += p.runningTally;
                 const tCls = p.runningTally > 0 ? 'positive' : (p.runningTally < 0 ? 'negative' : 'neutral');
                 
                 talliesHtml += `
-                    <div class="tally-item" onclick="toggleCollapse(${i})">
+                    <div class="tally-item" onclick="togglePlayerPanel(${i})">
                         <div class="tally-name">${p.name}</div>
                         <div class="tally-value ${tCls}">${p.runningTally > 0 ? '+' : ''}${p.runningTally}</div>
                     </div>`;
 
                 const sCls = p.score > 0 ? 'positive' : (p.score < 0 ? 'negative' : 'neutral');
                 const setAsideCls = p.setAsidePoints > 0 ? 'positive' : (p.setAsidePoints < 0 ? 'negative' : '');
-                const setAsideText = p.setAsidePoints !== 0 ? `<div class="set-aside-tally ${setAsideCls}">${p.setAsidePoints > 0 ? '+' : ''}${p.setAsidePoints}</div>` : '';
-                const streakLabel = p.streakCount > 0 ? `<span style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.streakCount}${p.streakType === 'win' ? 'W' : 'L'}</span>` : '';
+                const setAsideText = p.setAsidePoints !== 0 ? `<div class="mini-tally ${setAsideCls}">${p.setAsidePoints > 0 ? '+' : ''}${p.setAsidePoints}</div>` : '';
+                const streakLabel = p.streakCount > 0 ? `<div class="mini-streak" style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'}">${p.streakCount}${p.streakType === 'win' ? 'W' : 'L'}</div>` : '';
 
-                const card = document.createElement('div');
-                card.id = `player-card-${i}`;
-                card.className = `player-card ${p.isExpanded ? 'expanded' : ''}`;
-                card.innerHTML = `
-                    <div class="card-header" onclick="toggleCollapse(${i})">
-                        <div class="header-left">
-                            <div class="header-name">${p.name}</div>
-                            <div class="header-score ${sCls}">${p.score > 0 ? '+' : ''}${p.score}</div>
+                const miniCard = document.createElement('div');
+                miniCard.className = `mini-card ${expandedPlayerIndex === i ? 'active' : ''}`;
+                miniCard.onclick = () => togglePlayerPanel(i);
+                miniCard.innerHTML = `
+                    <div class="mini-name">${p.name}</div>
+                    <div class="mini-score ${sCls}">${p.score > 0 ? '+' : ''}${p.score}</div>
+                    ${streakLabel}
+                    ${setAsideText}
+                `;
+                dashboard.appendChild(miniCard);
+
+                if (expandedPlayerIndex === i) {
+                    panel.innerHTML = `
+                        <div class="panel-header">
+                            <div class="panel-title">${p.name}</div>
+                            <div class="header-score ${sCls}" style="font-size:1.8rem; font-weight:bold;">${p.score > 0 ? '+' : ''}${p.score}</div>
                         </div>
-                        <div class="header-right">
-                            <div class="header-info">
-                                ${streakLabel}
-                                ${setAsideText}
-                            </div>
-                            <div class="collapse-icon">▼</div>
-                        </div>
-                    </div>
-                    <div class="card-body" style="display:${p.isExpanded ? 'block' : 'none'}">
-                        <div class="streak" style="text-align:center;margin-bottom:10px;font-size:0.9rem;color:#7f8c8d">${p.streakCount > 0 ? p.streakCount + ' ' + (p.streakType === 'win' ? t.winStreak : t.lossStreak) + '<br>' + t.multiplier : t.noStreak}</div>
+                        <div class="panel-streak-detail">${p.streakCount > 0 ? p.streakCount + ' ' + (p.streakType === 'win' ? t.winStreak : t.lossStreak) + ' (' + t.multiplier + ')' : t.noStreak}</div>
+                        
                         <input type="number" id="points-${i}" class="points-input" placeholder="${t.handPoints}">
+                        
                         <div class="action-buttons">
                             <button class="btn-win" onclick="recordHand(${i},'win')">${t.winBtn}</button>
                             <button class="btn-lose" onclick="recordHand(${i},'lose')">${t.loseBtn}</button>
                         </div>
+                        
                         <button class="btn-special ${p.streakType === 'win' ? 'btn-bank' : 'btn-surrender'}" onclick="bankOrSurrender(${i})" ${p.streakCount >= 3 ? '' : 'disabled'}>${p.streakType === 'win' ? t.bankWinnings : t.surrenderDebt}</button>
+                        
                         <div class="update-tally-section">
                             <h3>${t.updateTallyHeader}</h3>
                             <div class="btn-row">
@@ -473,8 +470,8 @@
                                 <button class="btn-special btn-tally-local" onclick="sweepPlayerToTally(${i})">${t.tallyBtn}</button>
                             </div>
                         </div>
-                    </div>`;
-                board.appendChild(card);
+                    `;
+                }
             });
 
             document.getElementById('master-scoreboard').innerHTML = `<div class="combined-net-label">${t.netScore}</div><div class="combined-net-value ${globalNet > 0 ? 'positive' : (globalNet < 0 ? 'negative' : 'neutral')}">${globalNet > 0 ? '+' : ''}${globalNet}</div>${talliesHtml}</div>`;

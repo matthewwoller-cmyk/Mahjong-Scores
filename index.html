@@ -34,16 +34,16 @@
         }
         .btn-hard-reset:active { opacity: 0.8; }
 
-        /* FIXED: Language Toggle - Top Right (Added higher z-index and forced visibility) */
+        /* FIXED Language Toggle - Top Right (High contrast and z-index) */
         .lang-toggle {
             position: absolute;
             top: 20px;
             right: 20px;
             display: flex;
-            background: #dcdcdc; /* Slightly darker for better contrast */
+            background: #dcdcdc;
             border-radius: 20px;
             overflow: hidden;
-            z-index: 1000; /* Ensure it stays above all other elements */
+            z-index: 2000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .lang-toggle button {
@@ -52,7 +52,7 @@
             padding: 8px 15px;
             font-size: 0.9rem;
             cursor: pointer;
-            color: #444; /* Darker text for inactive state */
+            color: #444;
             font-weight: bold;
             transition: 0.3s;
             border-radius: 20px;
@@ -97,18 +97,91 @@
         .btn-undo { background-color: #f39c12; }
         .btn-undo:disabled { background-color: #bdc3c7; cursor: not-allowed; box-shadow: none; }
         
+        /* Master Scoreboard Styles */
         .master-scoreboard {
             background: #2c3e50; color: white; padding: 20px; border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15); margin-bottom: 20px;
             display: flex; flex-direction: column; align-items: center; text-align: center;
         }
         .combined-net-label { font-size: 1rem; color: #bdc3c7; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .combined-net-value { font-size: 3.5rem; font-weight: bold; margin-bottom: 5px; width: 100%; }
+        .combined-net-value { font-size: 3.5rem; font-weight: bold; margin-bottom: 10px; width: 100%; border-bottom: 1px solid #34495e; padding-bottom: 15px; }
         
+        .tally-row { display: flex; justify-content: space-around; width: 100%; margin-top: 10px; }
+        .tally-item { 
+            flex: 1; padding: 10px 5px; cursor: pointer; border-radius: 8px; transition: background 0.2s;
+        }
+        .tally-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .tally-name { font-size: 0.85rem; color: #bdc3c7; font-weight: bold; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tally-value { font-size: 1.4rem; font-weight: bold; }
+
         /* Strict Color Rules */
         .positive { color: #27ae60 !important; }
         .negative { color: #e74c3c !important; }
 
+        /* Dashboard Grid Styles */
+        .dashboard-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            margin-bottom: 15px;
+        }
+        .mini-card { 
+            background: #fff; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+            border: 2px solid #000; 
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 110px;
+            transition: all 0.2s;
+        }
+        .mini-card.active { background-color: #f0f0f0; border-width: 3.5px; }
+        .mini-name { font-size: 0.85rem; font-weight: bold; color: #2c3e50; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .mini-tally-label { font-size: 0.65rem; color: #7f8c8d; text-transform: uppercase; }
+        .mini-tally-value { font-size: 1rem; font-weight: bold; margin-bottom: 5px; }
+        .mini-score-value { font-size: 1.3rem; font-weight: bold; }
+        .mini-streak-info { font-size: 0.75rem; font-weight: bold; margin-top: 2px; }
+
+        /* Workspace Interaction Panel */
+        .interaction-panel {
+            background: #fff;
+            border: 2.5px solid #000;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 10px;
+            display: none; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .panel-title { font-size: 1.3rem; font-weight: bold; color: #2c3e50; }
+        .panel-streak-detail { font-size: 0.9rem; color: #7f8c8d; text-align: center; margin-bottom: 15px; }
+        .points-input { width: calc(100% - 24px); padding: 12px; font-size: 1.1rem; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+        .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
+        .action-buttons button { flex: 1; padding: 15px; font-size: 1.1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .btn-win { background-color: #27ae60; }
+        .btn-lose { background-color: #e74c3c; }
+        .update-tally-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; }
+        .update-tally-section h3 { font-size: 0.9rem; text-transform: uppercase; color: #7f8c8d; margin: 10px 0; text-align: center; }
+        .btn-row { display: flex; gap: 10px; }
+        .btn-special { width: 100%; margin-top: 8px; padding: 12px; font-size: 1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        .btn-surrender { background-color: #f39c12; }
+        .btn-bank { background-color: #8e44ad; }
+        .btn-half { background-color: #16a085; }
+        .btn-tally-local { background-color: #2980b9; }
+        .btn-special:disabled { background-color: #bdc3c7; cursor: not-allowed; color: #7f8c8d; }
+
+        /* Manual Adjust Section */
         .manual-adjust {
             background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;
@@ -120,81 +193,8 @@
         .btn-add { background-color: #27ae60; }
         .btn-sub { background-color: #e74c3c; }
 
-        /* DASHBOARD GRID BOARD */
-        .dashboard-grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 10px; 
-            margin-bottom: 15px;
-        }
-        
-        .mini-card { 
-            background: #fff; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
-            border: 2px solid #000; /* PERMANENT BLACK BORDER */
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-height: 110px;
-            transition: all 0.2s;
-        }
-        
-        .mini-card.active {
-            background-color: #f0f0f0;
-            border-width: 3.5px;
-        }
-
-        .mini-name { font-size: 0.85rem; font-weight: bold; color: #2c3e50; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-        .mini-tally-label { font-size: 0.65rem; color: #7f8c8d; text-transform: uppercase; }
-        .mini-tally-value { font-size: 1rem; font-weight: bold; margin-bottom: 5px; }
-        .mini-score-value { font-size: 1.3rem; font-weight: bold; }
-        .mini-streak-info { font-size: 0.75rem; font-weight: bold; margin-top: 2px; }
-
-        /* WORKSPACE PANEL BELOW */
-        .interaction-panel {
-            background: #fff;
-            border: 2.5px solid #000;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 10px;
-            display: none; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-        }
-        
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-        
-        .panel-title { font-size: 1.3rem; font-weight: bold; color: #2c3e50; }
-        .panel-streak-detail { font-size: 0.9rem; color: #7f8c8d; text-align: center; margin-bottom: 15px; }
-
-        .points-input { width: calc(100% - 24px); padding: 12px; font-size: 1.1rem; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
-        .action-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
-        .action-buttons button { flex: 1; padding: 15px; font-size: 1.1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .btn-win { background-color: #27ae60; }
-        .btn-lose { background-color: #e74c3c; }
-        
-        .update-tally-section { margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px; }
-        .update-tally-section h3 { font-size: 0.9rem; text-transform: uppercase; color: #7f8c8d; margin: 10px 0; text-align: center; }
-        .btn-row { display: flex; gap: 10px; }
-
-        .btn-special { width: 100%; margin-top: 8px; padding: 12px; font-size: 1rem; font-weight: bold; color: white; border: none; border-radius: 8px; cursor: pointer; }
-        .btn-surrender { background-color: #f39c12; }
-        .btn-bank { background-color: #8e44ad; }
-        .btn-half { background-color: #16a085; }
-        .btn-tally-local { background-color: #2980b9; }
-        .btn-special:disabled { background-color: #bdc3c7; cursor: not-allowed; color: #7f8c8d; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; text-align: center; }
         .modal-content button { width: 100%; padding: 15px; background: #2980b9; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
@@ -204,6 +204,7 @@
             .mini-name { font-size: 0.75rem; }
             .mini-tally-value { font-size: 0.85rem; }
             .mini-card { min-height: 120px; }
+            .tally-value { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -404,11 +405,11 @@
             document.getElementById('btn-undo').disabled = historyStack.length === 0;
             document.getElementById('btn-hard-reset').innerText = t.resetBtn;
 
-            // Updated language button visibility logic
             document.getElementById('lang-en').className = (currentLang === 'en') ? 'active' : '';
             document.getElementById('lang-zh').className = (currentLang === 'zh') ? 'active' : '';
 
             let globalNet = tableOffset;
+            let talliesHtml = '<div class="tally-row">';
             const dashboard = document.getElementById('dashboard-grid');
             const panel = document.getElementById('interaction-panel');
             dashboard.innerHTML = '';
@@ -418,6 +419,14 @@
                 globalNet += p.runningTally;
                 const tCls = p.runningTally > 0 ? 'positive' : (p.runningTally < 0 ? 'negative' : '');
                 const sCls = p.score > 0 ? 'positive' : (p.score < 0 ? 'negative' : '');
+                
+                // Add individual score links to the Top Combined section
+                talliesHtml += `
+                    <div class="tally-item" onclick="togglePlayerPanel(${i})">
+                        <div class="tally-name">${p.name}</div>
+                        <div class="tally-value ${tCls}">${p.runningTally > 0 ? '+' : ''}${p.runningTally}</div>
+                    </div>`;
+
                 const streakLabel = p.streakCount > 0 ? `<div class="mini-streak-info" style="color:${p.streakType === 'win' ? '#27ae60' : '#e74c3c'}">${p.streakCount}${p.streakType === 'win' ? 'W' : 'L'}</div>` : '';
                 const setAsideText = p.setAsidePoints !== 0 ? `<div class="mini-streak-info ${p.setAsidePoints > 0 ? 'positive' : 'negative'}">${p.setAsidePoints > 0 ? '+' : ''}${p.setAsidePoints}</div>` : '';
 
@@ -457,12 +466,14 @@
                     `;
                 }
             });
+            talliesHtml += '</div>';
 
             document.getElementById('master-scoreboard').innerHTML = `
                 <div class="combined-net-label">${t.netScore}</div>
                 <div class="combined-net-value ${globalNet > 0 ? 'positive' : (globalNet < 0 ? 'negative' : '')}">
                     ${globalNet > 0 ? '+' : ''}${globalNet}
                 </div>
+                ${talliesHtml}
             `;
             
             document.getElementById('manual-adjust-container').innerHTML = `

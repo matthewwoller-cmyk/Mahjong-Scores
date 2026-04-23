@@ -34,7 +34,7 @@
         }
         .btn-hard-reset:active { opacity: 0.8; }
 
-        /* FIXED Language Toggle - Top Right (High contrast and z-index) */
+        /* Language Toggle - Top Right (High contrast and z-index) */
         .lang-toggle {
             position: absolute;
             top: 20px;
@@ -141,9 +141,7 @@
         }
         .mini-card.active { background-color: #f0f0f0; border-width: 3.5px; }
         .mini-name { font-size: 0.85rem; font-weight: bold; color: #2c3e50; margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-        .mini-tally-label { font-size: 0.65rem; color: #7f8c8d; text-transform: uppercase; }
-        .mini-tally-value { font-size: 1rem; font-weight: bold; margin-bottom: 5px; }
-        .mini-score-value { font-size: 1.3rem; font-weight: bold; }
+        .mini-score-value { font-size: 1.4rem; font-weight: bold; }
         .mini-streak-info { font-size: 0.75rem; font-weight: bold; margin-top: 2px; }
 
         /* Workspace Interaction Panel */
@@ -202,7 +200,6 @@
         @media (max-width: 500px) {
             .mini-score-value { font-size: 1.1rem; }
             .mini-name { font-size: 0.75rem; }
-            .mini-tally-value { font-size: 0.85rem; }
             .mini-card { min-height: 120px; }
             .tally-value { font-size: 1.1rem; }
         }
@@ -420,7 +417,6 @@
                 const tCls = p.runningTally > 0 ? 'positive' : (p.runningTally < 0 ? 'negative' : '');
                 const sCls = p.score > 0 ? 'positive' : (p.score < 0 ? 'negative' : '');
                 
-                // Add individual score links to the Top Combined section
                 talliesHtml += `
                     <div class="tally-item" onclick="togglePlayerPanel(${i})">
                         <div class="tally-name">${p.name}</div>
@@ -435,8 +431,6 @@
                 miniCard.onclick = () => togglePlayerPanel(i);
                 miniCard.innerHTML = `
                     <div class="mini-name">${p.name}</div>
-                    <div class="mini-tally-label">${t.totalBanked}</div>
-                    <div class="mini-tally-value ${tCls}">${p.runningTally > 0 ? '+' : ''}${p.runningTally}</div>
                     <div class="mini-score-value ${sCls}">${p.score > 0 ? '+' : ''}${p.score}</div>
                     ${streakLabel}
                     ${setAsideText}
